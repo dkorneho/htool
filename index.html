@@ -129,7 +129,7 @@
             <input
               type="text"
               id="global-search"
-              placeholder="Buscar guión, SSN, OMS, RTI, CWP..."
+              placeholder="Buscar guión, OMS, RTI, CWP, Cologuard, PAAG..."
               class="w-full pl-9 pr-8 py-1.5 text-xs sm:text-sm rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all"
             />
             <button
@@ -229,7 +229,7 @@
     <!-- Empty Search State -->
     <div id="no-results-box" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-8 text-center space-y-3">
       <p class="text-base font-bold text-slate-900 dark:text-white">No se encontraron coincidencias</p>
-      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Intenta con otro término como <em>Greeting, SSN, OMS, RTI, CWP, Medicare, POA</em> o <em>Genesys</em>.</p>
+      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Intenta con otro término como <em>Greeting, Debut, OMS, RTI, CWP, Medicare, POA</em> o <em>Genesys</em>.</p>
       <button type="button" id="empty-reset-btn" class="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-colors">
         Restablecer filtros
       </button>
@@ -824,8 +824,9 @@
           <!-- Tools & Screen Hygiene -->
           <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-2 text-xs">
             <p class="font-bold text-slate-900 dark:text-white">Ecosistema y Hábitos de Seguridad:</p>
-            <ul class="text-slate-700 dark:text-slate-300 space-y-1">
-              <li>&bull; <strong>Herramientas:</strong> <em>Genesys Softphone</em> (menú, call center, phone status, interactions), <em>Agent Assist</em> (transcripción), <em>Debit - Benefits</em> (ver beneficios del plan), Portal: <button type="button" onclick="copyScript('Plus.humana.com', 'Portal Plus.humana.com')" class="font-mono font-bold text-emerald-700 dark:text-emerald-400 underline">Plus.humana.com</button>.</li>
+            <ul class="text-slate-700 dark:text-slate-300 space-y-1.5">
+              <li>&bull; <strong>Debut (Debit - Benefits):</strong> Sirve para saber <strong>qué plan tiene el miembro</strong> y consultar sus beneficios.</li>
+              <li>&bull; <strong>Herramientas:</strong> <em>Genesys Softphone</em> (menú, call center, phone status, interactions), <em>Agent Assist</em> (transcripción), Portal: <button type="button" onclick="copyScript('Plus.humana.com', 'Portal Plus.humana.com')" class="font-mono font-bold text-emerald-700 dark:text-emerald-400 underline">Plus.humana.com</button>.</li>
               <li>&bull; <strong>Screen Management:</strong> Cerrar pestañas sin uso al terminar, mantener visual de todo lo que se usará y <strong>bloquear pantalla al dejar el escritorio</strong> (<em>lock screen when leaving desk</em>).</li>
             </ul>
           </div>
@@ -967,6 +968,15 @@
               <span class="font-bold text-emerald-900 dark:text-emerald-200">Paso 7 (Obligatorio): Colocar el <strong>Order Number en QuickStart</strong>.</span>
             </label>
           </div>
+
+          <!-- OMS Filling Field Rules -->
+          <div class="p-3.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/35 border border-amber-200 dark:border-amber-800/70 space-y-1.5 text-xs">
+            <p class="font-extrabold uppercase tracking-wider text-amber-900 dark:text-amber-300">OMS Filling — Reglas de Llenado de Dirección</p>
+            <ul class="text-amber-950/90 dark:text-amber-200/90 space-y-1">
+              <li>&bull; <strong>Ship to Name</strong> y <strong>Ship to Attention:</strong> Ambos campos llevan el <strong>nombre del miembro</strong> (<em>member's name</em>).</li>
+              <li>&bull; <strong>Address Line 1:</strong> Colocar únicamente la dirección (<em>street address</em>), <strong>sin City ni State</strong> (<em>without City and State</em>).</li>
+            </ul>
+          </div>
         </div>
 
         <!-- Fulfillment Materials, ID Card & Enrollment Search -->
@@ -1052,6 +1062,74 @@
             </div>
             <p class="text-indigo-950/90 dark:text-indigo-200/90 leading-relaxed">
               <strong>Member Preferences:</strong> Editar cómo el miembro desea recibir comunicaciones de Humana.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stars Kit Test Portal (Cologuard / Glucosa) & Find Care / PAAG -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <!-- Stars Kit Test Portal -->
+        <div data-searchable class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft space-y-3 text-xs">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white">Stars Kit Test Portal (Cologuard y Glucosa)</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Kits preventivos enviados por Humana y verificación de tipo de kit</p>
+            </div>
+            <span class="px-2.5 py-0.5 rounded-lg bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 font-bold text-[11px] shrink-0">
+              Stars Kits
+            </span>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5">
+            <span class="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-semibold">Cologuard (Colonoscopia / Cáncer de colon)</span>
+            <span class="px-2.5 py-1 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800 font-semibold">Glucosa</span>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-1.5">
+            <p class="font-bold text-slate-900 dark:text-white">Ruta en Stars Kit Test Portal:</p>
+            <p class="font-mono text-emerald-800 dark:text-emerald-300 bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
+              Stars Kit Test Portal &rarr; Member ID &rarr; Click <strong># ID</strong> &rarr; Look kit type
+            </p>
+          </div>
+
+          <div class="p-3 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/35 border border-indigo-200 dark:border-indigo-800/70 text-indigo-950 dark:text-indigo-200">
+            <strong>Cobertura y Pagos:</strong> Para revisar detalles de cobertura o costos del examen, consultar la sección <strong>Benefits &rarr; Cobertura, Pagos</strong>.
+          </div>
+        </div>
+
+        <!-- Find Care & PAAG Provider Search -->
+        <div data-searchable class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft space-y-3 text-xs">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white">Búsqueda de Doctores (Find Care y PAAG)</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Localización de Physician, Chiropractor u otro médico para el miembro</p>
+            </div>
+            <span class="px-2.5 py-0.5 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-bold text-[11px] shrink-0">
+              Find Care / PAAG
+            </span>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/35 border border-emerald-200 dark:border-emerald-800/70 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <p class="font-bold text-emerald-950 dark:text-emerald-200">1. Búsqueda Principal (Physician / Chiropractor / Doctor):</p>
+              <button
+                type="button"
+                onclick="copyScript('Umbrella Tab -> Find Care', 'Ruta Find Care')"
+                class="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 hover:underline"
+              >
+                Copiar ruta
+              </button>
+            </div>
+            <p class="font-mono text-emerald-900 dark:text-emerald-300 bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-emerald-200 dark:border-emerald-800">
+              Umbrella Tab &rarr; <strong>Find Care</strong>
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/35 border border-amber-200 dark:border-amber-800/70 space-y-1">
+            <p class="font-extrabold text-amber-900 dark:text-amber-300">2. Si el proveedor NO aparece en Find Care:</p>
+            <p class="text-amber-950/90 dark:text-amber-200/90 leading-relaxed">
+              Utilizar la herramienta <strong>PAAG</strong> para completar la búsqueda (<em>If provider is not appearing in Find Care, use PAAG</em>).
             </p>
           </div>
         </div>
