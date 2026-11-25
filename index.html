@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Humana Healthcare Advocate Hub — Diego</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          boxShadow: {
+            'soft': '0 4px 20px -2px rgba(15, 23, 42, 0.06)',
+            'glow-emerald': '0 0 0 3px rgba(16, 185, 129, 0.18)',
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    /* Custom scrollbar & ergonomic micro-interactions for call-center shifts */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.35);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(16, 185, 129, 0.65);
+    }
+
+    .card-hover {
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-2px);
+    }
+
+    .copy-pill {
+      transition: all 0.15s ease;
+    }
+    .copy-pill:active {
+      transform: scale(0.97);
+    }
+
+    /* Subtle pulse for active call timer */
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.85); }
+    }
+    .animate-call-dot {
+      animation: pulseDot 1.6s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-white transition-colors duration-200">
+
+  <!-- ===================================================================== -->
+  <!-- TOP STICKY AGENT COCKPIT HEADER (TIMER, SEARCH, THEME, QUICK FLOW)    -->
+  <!-- ===================================================================== -->
+  <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/90 dark:border-slate-800 shadow-sm">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5">
+      <div class="flex flex-wrap items-center justify-between gap-2.5">
+
+        <!-- Brand & Agent Identity -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex items-center justify-center font-extrabold text-lg shadow-sm shrink-0">
+            H
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-sm sm:text-base font-extrabold tracking-tight text-slate-900 dark:text-white">
+                Humana Advocate Hub
+              </h1>
+              <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300/70 dark:border-emerald-800">
+                Diego &bull; Healthcare Advocate
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 hidden md:block">
+              Consola operativa en vivo &bull; Presiona <kbd class="px-1.5 py-0.5 text-[10px] font-mono bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded">/</kbd> para buscar
+            </p>
+          </div>
+        </div>
+
+        <!-- Live Call Timer Widget -->
+        <div class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5">
+          <span id="call-status-dot" class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+          <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 hidden sm:inline">Llamada:</span>
+          <span id="call-timer-display" class="font-mono text-xs sm:text-sm font-bold text-slate-900 dark:text-white min-w-[48px] text-center">00:00</span>
+          <button
+            type="button"
+            id="timer-toggle-btn"
+            class="px-2 py-1 rounded-lg text-[11px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition-colors"
+            title="Iniciar o pausar cronómetro de llamada"
+          >
+            Iniciar
+          </button>
+          <button
+            type="button"
+            id="timer-reset-btn"
+            class="p-1 rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-slate-700 transition-colors"
+            title="Reiniciar cronómetro"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Global Instant Search & Theme Toggle -->
+        <div class="flex items-center gap-2 w-full sm:w-auto order-3 sm:order-2">
+          <div class="relative flex-1 sm:w-64 md:w-72">
+            <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              id="global-search"
+              placeholder="Buscar guión, SSN, OMS, RTI, CWP..."
+              class="w-full pl-9 pr-8 py-1.5 text-xs sm:text-sm rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+            />
+            <button
+              type="button"
+              id="clear-search-btn"
+              class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-white"
+              title="Limpiar búsqueda"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Dark / Eye-Comfort Mode Toggle -->
+          <button
+            type="button"
+            id="theme-toggle-btn"
+            class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-amber-300 hover:bg-slate-200/70 dark:hover:bg-slate-700 transition-colors shrink-0"
+            title="Alternar modo claro / oscuro (descanso visual)"
+          >
+            <!-- Sun Icon (shown in dark mode) -->
+            <svg id="icon-sun" class="w-4 h-4 hidden dark:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+            </svg>
+            <!-- Moon Icon (shown in light mode) -->
+            <svg id="icon-moon" class="w-4 h-4 block dark:hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+            </svg>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Category Navigation Pills -->
+      <nav aria-label="Secciones operativas" class="flex items-center gap-1.5 overflow-x-auto pt-2.5 pb-0.5 no-scrollbar">
+        <button type="button" data-nav="all" class="nav-pill active px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all bg-emerald-600 text-white shadow-sm">
+          Todo el Manual
+        </button>
+        <button type="button" data-nav="sec-scripts" class="nav-pill px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700">
+          1. Guiones y Llamada
+        </button>
+        <button type="button" data-nav="sec-auth" class="nav-pill px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700">
+          2. Autenticación y CMS
+        </button>
+        <button type="button" data-nav="sec-systems" class="nav-pill px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700">
+          3. Sistemas y Genesys
+        </button>
+        <button type="button" data-nav="sec-fulfillment" class="nav-pill px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700">
+          4. OMS, Enrollment y Cartas
+        </button>
+        <button type="button" data-nav="sec-medicare" class="nav-pill px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700">
+          5. Medicare, CAHPS y Ref.
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- MAIN CONTENT CONTAINER                                                -->
+  <!-- ===================================================================== -->
+  <main class="max-w-7xl mx-auto px-3 sm:px-6 py-5 space-y-6">
+
+    <!-- Quick Live-Call Sequence Strip (Always visible for orientation) -->
+    <section class="bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white rounded-2xl p-3.5 sm:p-4 shadow-soft border border-emerald-700/40">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <span class="px-2.5 py-1 rounded-lg bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 font-mono text-xs font-bold">
+            FLUJO RÁPIDO
+          </span>
+          <p class="text-xs sm:text-sm font-medium text-emerald-50">
+            Cada llamada tiene un <strong class="text-white underline decoration-emerald-400">Interaction #</strong> &bull; Revisa <strong class="text-white">CSMP Screen (VCC Status)</strong> antes de saludar.
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-1.5 text-[11px] font-semibold">
+          <span class="px-2.5 py-1 rounded-lg bg-white/10 border border-white/15">1. Greeting</span>
+          <span class="text-emerald-400">&rarr;</span>
+          <span class="px-2.5 py-1 rounded-lg bg-white/10 border border-white/15">2. Autenticar (1 + 2)</span>
+          <span class="text-emerald-400">&rarr;</span>
+          <span class="px-2.5 py-1 rounded-lg bg-white/10 border border-white/15">3. Umbrella Tab &amp; With/About</span>
+          <span class="text-emerald-400">&rarr;</span>
+          <span class="px-2.5 py-1 rounded-lg bg-white/10 border border-white/15">4. QuickStart (RSO) &amp; Closing</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Search Active Status Bar -->
+    <div id="search-status-bar" class="hidden bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 rounded-xl px-4 py-2.5 flex items-center justify-between gap-2 text-xs sm:text-sm">
+      <p class="text-emerald-900 dark:text-emerald-200">
+        Mostrando <strong id="search-match-count">0</strong> tarjetas para "<span id="search-query-label" class="font-mono font-bold"></span>"
+      </p>
+      <button type="button" id="banner-reset-btn" class="px-3 py-1 rounded-lg bg-emerald-600 text-white font-semibold text-xs hover:bg-emerald-700 transition-colors">
+        Mostrar todo
+      </button>
+    </div>
+
+    <!-- Empty Search State -->
+    <div id="no-results-box" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-8 text-center space-y-3">
+      <p class="text-base font-bold text-slate-900 dark:text-white">No se encontraron coincidencias</p>
+      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Intenta con otro término como <em>Greeting, SSN, OMS, RTI, CWP, Medicare, POA</em> o <em>Genesys</em>.</p>
+      <button type="button" id="empty-reset-btn" class="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-colors">
+        Restablecer filtros
+      </button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SECCIÓN 1: GUIONES Y PROTOCOLO DE LLAMADA                             -->
+    <!-- ===================================================================== -->
+    <section id="sec-scripts" class="hub-section space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+        <div class="flex items-center gap-2.5">
+          <span class="w-7 h-7 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center">1</span>
+          <div>
+            <h2 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">Guiones Oficiales y Protocolo de Llamada</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Personaliza variables opcionales y copia cualquier guión con un clic</p>
+          </div>
+        </div>
+
+        <!-- Dynamic Script Variable Helper -->
+        <div class="flex flex-wrap items-center gap-2 bg-white dark:bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800">
+          <label for="script-topic-input" class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Tema Closing:</label>
+          <input
+            type="text"
+            id="script-topic-input"
+            placeholder="ej. your ID card / benefits..."
+            class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-emerald-500 w-44"
+          />
+        </div>
+      </div>
+
+      <!-- 4 Core Scripts Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Script 1: Opening / Greeting -->
+        <div data-searchable class="card-hover bg-white dark:bg-slate-900 rounded-2xl border-2 border-emerald-500/40 dark:border-emerald-600/40 p-5 shadow-soft flex flex-col justify-between gap-3">
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                Opening / Greeting
+              </span>
+              <span class="text-[11px] font-medium text-slate-400">Paso inicial</span>
+            </div>
+            <blockquote class="p-3.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 text-sm sm:text-base font-semibold text-slate-900 dark:text-emerald-50 leading-relaxed">
+              "Hi, thank you for calling Humana, my name's <span class="text-emerald-700 dark:text-emerald-400 underline decoration-dotted">Diego</span>, your Healthcare advocate. How can I <span class="font-extrabold text-emerald-700 dark:text-emerald-300">CARE</span> for you today?"
+            </blockquote>
+            <p class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+              Primera oportunidad para conectar con el miembro y demostrar aprecio.
+            </p>
+          </div>
+          <button
+            type="button"
+            onclick="copyScript('Hi, thank you for calling Humana, my name\'s Diego, your Healthcare advocate. How can I CARE for you today?', 'Opening / Greeting')"
+            class="copy-pill w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            Copiar Greeting
+          </button>
+        </div>
+
+        <!-- Script 2: Assurance / Empathy Phrase -->
+        <div data-searchable class="card-hover bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft flex flex-col justify-between gap-3">
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300">
+                Empatía y Seguridad
+              </span>
+              <span class="text-[11px] font-medium text-slate-400">Durante la llamada</span>
+            </div>
+            <blockquote class="p-3.5 rounded-xl bg-teal-50/70 dark:bg-teal-950/40 border border-teal-200/80 dark:border-teal-800/60 text-sm sm:text-base font-semibold text-slate-900 dark:text-teal-50 leading-relaxed">
+              "I can take care of that for you."
+            </blockquote>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Úsala inmediatamente después de escuchar la solicitud del miembro para transmitir confianza y propiedad del caso.
+            </p>
+          </div>
+          <button
+            type="button"
+            onclick="copyScript('I can take care of that for you.', 'Frase de Empatía')"
+            class="copy-pill w-full py-2 px-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            Copiar Frase
+          </button>
+        </div>
+
+        <!-- Script 3: Closing -->
+        <div data-searchable class="card-hover bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft flex flex-col justify-between gap-3">
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">
+                Closing (Cierre)
+              </span>
+              <span class="text-[11px] font-medium text-slate-400">Fin de llamada</span>
+            </div>
+            <blockquote id="closing-script-preview" class="p-3.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/60 text-sm sm:text-base font-semibold text-slate-900 dark:text-indigo-50 leading-relaxed">
+              "It's been a pleasure helping you with <span id="closing-topic-span" class="text-indigo-700 dark:text-indigo-300 underline decoration-dotted">...</span> Thank you for calling Humana, we are always here to help."
+            </blockquote>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Recuerda preguntar antes si tiene alguna duda adicional y registrar el cierre en QuickStart.
+            </p>
+          </div>
+          <button
+            type="button"
+            id="copy-closing-btn"
+            class="copy-pill w-full py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            Copiar Closing
+          </button>
+        </div>
+
+        <!-- Script 4: Transfer -->
+        <div data-searchable class="card-hover bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft flex flex-col justify-between gap-3">
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+                Transfer (Transferencia)
+              </span>
+              <span class="text-[11px] font-medium text-slate-400">Antes de transferir</span>
+            </div>
+            <blockquote class="p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/60 text-sm sm:text-base font-semibold text-slate-900 dark:text-amber-50 leading-relaxed">
+              "It's been a pleasure helping you reach the correct department. Thank you for calling Humana, we are always here to help."
+            </blockquote>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Para llamadas internas, entrega siempre la verificación de la cuenta al área receptora.
+            </p>
+          </div>
+          <button
+            type="button"
+            onclick="copyScript('It\'s been a pleasure helping you reach the correct department. Thank you for calling Humana, we are always here to help.', 'Guión de Transferencia')"
+            class="copy-pill w-full py-2 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            Copiar Transfer
+          </button>
+        </div>
+      </div>
+
+      <!-- Callers & Operational Support Notes -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <!-- Types of Callers -->
+        <div data-searchable class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft space-y-3.5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Tipos de Llamantes (Humana &amp; Internal)</h3>
+            <span class="text-[11px] font-mono font-semibold text-emerald-700 dark:text-emerald-400">Callers</span>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5">
+            <span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">Family members</span>
+            <span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">Caregiver</span>
+            <span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">Sales agent</span>
+            <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">Provider</span>
+            <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-800">Internal Callers</span>
+          </div>
+
+          <div class="rounded-xl bg-emerald-50/80 dark:bg-emerald-950/35 border border-emerald-200 dark:border-emerald-800/70 p-3.5 space-y-2">
+            <div class="flex items-center justify-between">
+              <p class="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">Protocolo de Providers (NPI / Tax ID)</p>
+              <button
+                type="button"
+                onclick="copyScript('Search -> Provider Search -> NPI -> With -> Search Member -> About', 'Ruta Provider Search')"
+                class="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 hover:underline"
+              >
+                Copiar ruta
+              </button>
+            </div>
+            <ul class="text-xs text-slate-700 dark:text-slate-300 space-y-1.5">
+              <li>&bull; <strong>Validación y alcance:</strong> Solicitar <strong>NPI, Tax ID, Facility / Provider group</strong>. Info permitida: <strong>Plan effective, termination y PHI</strong>.</li>
+              <li>&bull; <strong>Regla de atención:</strong> Si llama por información general, <strong>sí se toma</strong>; si es por un tema específico, <strong>se transfiere a Providers</strong>.</li>
+            </ul>
+            <div class="font-mono text-[11px] bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-300 overflow-x-auto">
+              Search &rarr; Provider Search &rarr; NPI &rarr; With &rarr; Search Member &rarr; About
+            </div>
+          </div>
+
+          <div class="rounded-xl bg-indigo-50/70 dark:bg-indigo-950/35 border border-indigo-200 dark:border-indigo-800/70 p-3.5 space-y-1">
+            <p class="text-xs font-bold uppercase tracking-wider text-indigo-900 dark:text-indigo-300">Internal Callers &amp; Enrutamiento IVR</p>
+            <ul class="text-xs text-slate-700 dark:text-slate-300 space-y-1">
+              <li>&bull; <strong>Llamadas internas:</strong> Transferencias entre áreas (<em>enrollment, claims, etc.</em>). Verifica al miembro al recibir y <strong>pasa la verificación de la cuenta</strong> al transferir.</li>
+              <li>&bull; <strong>IVR Interaction:</strong> Puedes recibir llamadas fuera de tu entrenamiento (ej. <em>Clinical Nurses &rarr; Pharmacy Advocates, Medical Claims</em>).</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Operational Support & Best Practices -->
+        <div data-searchable class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft flex flex-col justify-between gap-3">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-bold text-slate-900 dark:text-white">Soporte Operativo y Buenas Prácticas</h3>
+              <span class="text-[11px] font-mono font-semibold text-indigo-600 dark:text-indigo-400">SOP</span>
+            </div>
+
+            <div class="space-y-2.5 text-xs">
+              <div class="flex items-start gap-3 bg-slate-50 dark:bg-slate-800/70 rounded-xl p-3 border border-slate-200/70 dark:border-slate-700/70">
+                <span class="w-6 h-6 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold shrink-0">1</span>
+                <div>
+                  <p class="font-bold text-slate-900 dark:text-white">Pre-llamada y Control de Distracciones</p>
+                  <p class="text-slate-600 dark:text-slate-300 mt-0.5">Revisar <strong>CSMP Screen para VCC status</strong>, verificar el <strong>Interaction #</strong> de la llamada y preparar el entorno sin distracciones (<em>time for possible distractions</em>).</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 bg-slate-50 dark:bg-slate-800/70 rounded-xl p-3 border border-slate-200/70 dark:border-slate-700/70">
+                <span class="w-6 h-6 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold shrink-0">2</span>
+                <div>
+                  <p class="font-bold text-slate-900 dark:text-white">Apertura Diaria y Soporte SME</p>
+                  <p class="text-slate-600 dark:text-slate-300 mt-0.5">Abrir herramientas todos los días (puede haber <strong>trainings con roleplay</strong> para <em>Care Advocates</em>). Si un <strong>SME no está apoyando, reportarlo con J.</strong></p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 bg-emerald-50/70 dark:bg-emerald-950/35 rounded-xl p-3 border border-emerald-200 dark:border-emerald-800/70">
+                <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold shrink-0">3</span>
+                <div>
+                  <p class="font-bold text-emerald-950 dark:text-emerald-200">Keep the Caller Informed</p>
+                  <p class="text-emerald-900/90 dark:text-emerald-300/90 mt-0.5">Compartir información, educar al llamante, empoderarlo con opciones de <strong>self-service</strong>, informar cada paso y preguntar siempre si tiene dudas.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CRM Documentation & With/About -->
+      <div data-searchable class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft space-y-3.5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-2.5">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Documentación en CRM, Regla "With &amp; About" y Ghost Calls</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Cómo asociar notas, clasificar el escenario en RSO y registrar quién llama</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 self-start sm:self-auto">
+            Umbrella Tab &amp; QuickStart
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700/80 space-y-2">
+            <p class="font-bold text-sm text-slate-900 dark:text-white">Registro de Notas y Clasificación</p>
+            <ul class="text-slate-700 dark:text-slate-300 space-y-1.5">
+              <li>&bull; <strong>Umbrella tab:</strong> Anotar siempre lo que el cliente solicita para asociar el <em>case information</em> a la cuenta.</li>
+              <li>&bull; <strong>Associate to policy:</strong> Seleccionar para guardar las notas en la cuenta.</li>
+              <li>&bull; <strong>Clasificación (Razón de la llamada):</strong> En <strong>Calls (RSO) tab</strong> se encuentra la idea completa con el escenario para llenar <strong>QuickStart</strong>.</li>
+            </ul>
+          </div>
+
+          <div class="p-4 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/35 border border-indigo-200 dark:border-indigo-800/70 space-y-2">
+            <p class="font-bold text-sm text-indigo-950 dark:text-indigo-200">Regla "With &amp; About" y Ghost Calls</p>
+            <ul class="text-indigo-950/90 dark:text-indigo-200/90 space-y-1.5">
+              <li>&bull; <strong>With and About (Mismo miembro):</strong> Cuando hablas directamente con el miembro (<em>talking with the member</em>).</li>
+              <li>&bull; <strong>With:</strong> Persona en la línea (<em>provider, member's representative, doctor, pharmacy</em>).</li>
+              <li>&bull; <strong>About:</strong> El miembro sobre quien trata la llamada cuando <strong>no está en la línea</strong>.</li>
+              <li>&bull; <strong>Ghost call:</strong> Llamada donde no se puede escuchar a nadie en la línea.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECCIÓN 2: AUTENTICACIÓN, CUMPLIMIENTO (CMS / PHI) Y REPRESENTANTES   -->
+    <!-- ===================================================================== -->
+    <section id="sec-auth" class="hub-section space-y-4">
+      <div class="flex items-center gap-2.5 border-b border-slate-200 dark:border-slate-800 pb-2">
+        <span class="w-7 h-7 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center">2</span>
+        <div>
+          <h2 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">Autenticación del Llamante, Cumplimiento CMS / PHI y Demográficos</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Verificador interactivo (1 Obligatorio + 2 Secundarios), reglas HIPAA/CMS y representantes</p>
+        </div>
+      </div>
+
+      <!-- Interactive Caller Authentication Calculator -->
+      <div data-searchable class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3.5">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Verificador Interactivo de Autenticación</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Marca los datos validados por el llamante: <strong>1 de Columna A</strong> + <strong>2 de Columna B</strong></p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Dynamic Status Badge -->
+            <div id="auth-status-badge" class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 transition-all">
+              Pendiente (0/1 Obligatorio &bull; 0/2 Adicionales)
+            </div>
+
+            <!-- Toggle 'Red' Unauthenticated -->
+            <button
+              type="button"
+              id="auth-red-btn"
+              class="px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800 hover:bg-rose-100 dark:hover:bg-rose-900/60 transition-colors"
+            >
+              Marcar 'Red' (No autenticó)
+            </button>
+
+            <button
+              type="button"
+              id="auth-reset-btn"
+              class="px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+            >
+              Limpiar
+            </button>
+          </div>
+        </div>
+
+        <!-- 'Red' Unauthenticated Warning Banner (Hidden unless triggered) -->
+        <div id="auth-red-alert" class="hidden rounded-xl bg-rose-600 text-white p-3.5 flex items-start gap-3">
+          <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+          </svg>
+          <div class="text-xs sm:text-sm">
+            <p class="font-extrabold">CALLER UNAUTHENTICATED — Estatus 'RED'</p>
+            <p class="text-rose-100 mt-0.5">El miembro no pudo autenticarse por sí mismo. Aplican restricciones estrictas: <strong>no divulgar PHI</strong>; brindar únicamente información general o seguir flujo de autenticación alternativa.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Column A: Mandatory (Pick 1) -->
+          <div class="rounded-xl bg-emerald-50/50 dark:bg-emerald-950/25 border border-emerald-200 dark:border-emerald-800/70 p-4 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">Columna A: Obligatorio (Elegir 1)</span>
+              <span id="col-a-count" class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200">0 / 1</span>
+            </div>
+
+            <div class="space-y-2 text-xs sm:text-sm">
+              <label class="flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-emerald-500 transition-colors">
+                <span class="flex items-center gap-2.5 font-semibold text-slate-900 dark:text-white">
+                  <input type="checkbox" class="auth-check-a w-4 h-4 accent-emerald-600 rounded" />
+                  Humana Member ID
+                </span>
+                <span class="font-mono text-[11px] text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded">Inicia con "H"</span>
+              </label>
+
+              <label class="flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-emerald-500 transition-colors">
+                <span class="flex items-center gap-2.5 font-semibold text-slate-900 dark:text-white">
+                  <input type="checkbox" class="auth-check-a w-4 h-4 accent-emerald-600 rounded" />
+                  Medicare ID #
+                </span>
+                <span class="text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950 px-2 py-0.5 rounded">No dar por tel.</span>
+              </label>
+
+              <label class="flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-emerald-500 transition-colors">
+                <span class="flex items-center gap-2.5 font-semibold text-slate-900 dark:text-white">
+                  <input type="checkbox" class="auth-check-a w-4 h-4 accent-emerald-600 rounded" />
+                  Payment ID
+                </span>
+                <span class="text-[11px] text-slate-400">ID de pago</span>
+              </label>
+
+              <label class="flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-emerald-500 transition-colors">
+                <span class="flex items-center gap-2.5 font-semibold text-slate-900 dark:text-white">
+                  <input type="checkbox" class="auth-check-a w-4 h-4 accent-emerald-600 rounded" />
+                  Last 4 SSN
+                </span>
+                <span class="text-[11px] text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950 px-2 py-0.5 rounded">Preguntar indirecto</span>
+              </label>
+
+              <label class="flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-emerald-500 transition-colors">
+                <span class="flex items-center gap-2.5 font-semibold text-slate-900 dark:text-white">
+                  <input type="checkbox" class="auth-check-a w-4 h-4 accent-emerald-600 rounded" />
+                  Humana Spending Card
+                </span>
+                <span class="text-[11px] text-slate-400">Tarjeta</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Column B: Secondary (Pick 2) -->
+          <div class="rounded-xl bg-indigo-50/50 dark:bg-indigo-950/25 border border-indigo-200 dark:border-indigo-800/70 p-4 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-indigo-900 dark:text-indigo-300">Columna B: Adicionales (Elegir 2)</span>
+              <span id="col-b-count" class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200">0 / 2</span>
+            </div>
+
+            <div class="space-y-2 text-xs sm:text-sm">
+              <label class="flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-indigo-500 transition-colors">
+                <span class="flex items-center gap-2.5 font-semibold text-slate-900 dark:text-white">
+                  <input type="checkbox" class="auth-check-b w-4 h-4 accent-indigo-600 rounded" />
+                  Date of Birth (DOB)
+                </span>
+                <span class="text-[11px] text-indigo-700 dark:text-indigo-300 font-semibold">Común</span>
+              </label>
+
+              <label class="flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-indigo-500 transition-colors">
+                <span class="flex items-center gap-2.5 font-semibold text-slate-900 dark:text-white">
+                  <input type="checkbox" class="auth-check-b w-4 h-4 accent-indigo-600 rounded" />
+                  Zip Code
+                </span>
+                <span class="text-[11px] text-indigo-700 dark:text-indigo-300 font-semibold">Común</span>
+              </label>
+
+              <label class="flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-indigo-500 transition-colors">
+                <span class="flex items-center gap-2.5 font-semibold text-slate-900 dark:text-white">
+                  <input type="checkbox" class="auth-check-b w-4 h-4 accent-indigo-600 rounded" />
+                  Phone Number
+                </span>
+                <span class="text-[11px] text-slate-400">Teléfono</span>
+              </label>
+
+              <label class="flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-indigo-500 transition-colors">
+                <span class="flex items-center gap-2.5 font-semibold text-slate-900 dark:text-white">
+                  <input type="checkbox" class="auth-check-b w-4 h-4 accent-indigo-600 rounded" />
+                  Residential Address
+                </span>
+                <span class="text-[11px] text-slate-400">Dirección</span>
+              </label>
+
+              <label class="flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-indigo-500 transition-colors">
+                <span class="flex items-center gap-2.5 font-semibold text-slate-900 dark:text-white">
+                  <input type="checkbox" class="auth-check-b w-4 h-4 accent-indigo-600 rounded" />
+                  Member Group Name / Group # / Product Name
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CMS Guardrails, PHI, Demographics & Member Representatives -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <!-- CMS Regulations & PHI -->
+        <div data-searchable class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft space-y-3.5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Regulaciones CMS y Datos PHI</h3>
+            <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300">Compliance</span>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-rose-50/80 dark:bg-rose-950/35 border border-rose-200 dark:border-rose-800/70 space-y-2 text-xs">
+            <p class="font-bold text-rose-900 dark:text-rose-200">Prohibiciones Estrictas (CMS Regulations):</p>
+            <ul class="text-rose-950/90 dark:text-rose-200/90 space-y-1.5">
+              <li>&bull; <strong>SSN (Social Security Number):</strong> <strong>No está permitido pedir el SSN directamente</strong> por regulaciones CMS. Solo preguntar indirectamente o registrarlo si el miembro lo entrega voluntariamente.</li>
+              <li>&bull; <strong>Medicare ID Search:</strong> Permitido preguntar si tiene su Medicare ID como identificación alterna, pero <strong>NO podemos brindar ninguno de estos números por teléfono</strong>.</li>
+              <li>&bull; <strong>Uso de Google:</strong> Permitido únicamente para fines laborales (<em>just for job purposes</em>).</li>
+            </ul>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-2">
+            <p class="text-xs font-bold text-slate-900 dark:text-white">Protected Health Information (PHI):</p>
+            <div class="flex flex-wrap gap-1.5 text-xs">
+              <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-semibold">Name</span>
+              <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-semibold">Address</span>
+              <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-semibold">Phone Number</span>
+              <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-semibold">Date of Birth</span>
+              <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-semibold">SSN</span>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/70 space-y-1.5 text-xs">
+            <p class="font-bold text-amber-950 dark:text-amber-200">4 Disparadores para Verificar Demográficos:</p>
+            <ol class="list-decimal list-inside text-amber-950/90 dark:text-amber-200/90 space-y-1">
+              <li>Cuando la cuenta muestra <strong>90 días</strong> desde la última verificación.</li>
+              <li>Cuando el miembro solicita la actualización.</li>
+              <li>Antes de enviar cualquier información por <strong>mail, SMS o email</strong>.</li>
+              <li>Cuando la cuenta muestra el aviso de verificar (<em>advise to verify</em>).</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Member Representative Calls & Consent -->
+        <div data-searchable class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft space-y-3 text-xs">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Member Representative Calls y Consentimiento</h3>
+            <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300">Terceros</span>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700">
+            <p class="font-bold text-slate-900 dark:text-white">Power of Attorney (POA)</p>
+            <p class="text-slate-600 dark:text-slate-300 mt-0.5">Incluye: <strong>Legal Representative</strong>, <strong>Healthcare Surrogate</strong> y <strong>Legal Guardian</strong>.</p>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700">
+            <p class="font-bold text-slate-900 dark:text-white">Executor of Estate (EOE) / Albacea</p>
+            <p class="text-slate-600 dark:text-slate-300 mt-0.5">Autorizado para manejar asuntos tras el fallecimiento (<em>authorized to handle affairs after death</em>). Mantener todos los documentos (<em>keep all docs</em>) y aplicar protocolo de <strong>cómo dar condolencias</strong>.</p>
+          </div>
+
+          <div class="p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/35 border border-amber-200 dark:border-amber-800/70">
+            <p class="font-bold text-amber-950 dark:text-amber-200">Member Representative with Consent (Verbal o Escrito)</p>
+            <p class="text-amber-950/90 dark:text-amber-200/90 mt-0.5"><strong>No puede tomar ninguna decisión</strong> por el miembro; solo podemos brindarle información de Humana. Si el miembro indica que debemos hablar con otra persona, <strong>pedir consentimiento verbal antes de que se vaya</strong>.</p>
+          </div>
+
+          <!-- Consent Processing Times -->
+          <div class="p-3 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/35 border border-indigo-200 dark:border-indigo-800/70 space-y-1.5">
+            <p class="font-bold text-indigo-950 dark:text-indigo-200">Tiempos de Procesamiento — Consent Form:</p>
+            <div class="grid grid-cols-3 gap-2 text-center">
+              <div class="bg-white dark:bg-slate-900 rounded-lg p-2 border border-indigo-200 dark:border-indigo-800">
+                <span class="font-extrabold text-emerald-600 dark:text-emerald-400 block">Online</span>
+                <span class="text-slate-700 dark:text-slate-300">Inmediato</span>
+              </div>
+              <div class="bg-white dark:bg-slate-900 rounded-lg p-2 border border-indigo-200 dark:border-indigo-800">
+                <span class="font-extrabold text-indigo-600 dark:text-indigo-400 block">Fax</span>
+                <span class="text-slate-700 dark:text-slate-300">3–5 días háb.</span>
+              </div>
+              <div class="bg-white dark:bg-slate-900 rounded-lg p-2 border border-indigo-200 dark:border-indigo-800">
+                <span class="font-extrabold text-amber-600 dark:text-amber-400 block">Mail</span>
+                <span class="text-slate-700 dark:text-slate-300">7–14 días háb.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-900 dark:bg-slate-800 text-white">
+            <p class="font-bold text-emerald-400">Password-Protected Accounts (Seguridad Extra)</p>
+            <p class="text-slate-200 mt-0.5">Validar <strong>Login o Agency Name</strong> + <strong>Selling Agent Number (SAN#)</strong>.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Demographic Calls Procedures -->
+      <div data-searchable class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-2.5">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Llamadas Demográficas (Demographic Calls)</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Reglas para teléfono, correo electrónico y cambio de dirección permanente</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-800 self-start sm:self-auto">
+            Critical Demographic: NO modificar
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs">
+          <div class="p-3.5 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/70 space-y-1">
+            <p class="font-bold text-sm text-emerald-950 dark:text-emerald-200">Phone &amp; Email (Más sencillo)</p>
+            <p class="text-emerald-950/90 dark:text-emerald-200/90 leading-relaxed">
+              No requiere revisar sistemas adicionales. Hacer el cambio en el <strong>Update Demographic template</strong>. Si los templates no están disponibles, usar <strong>CI</strong> y <strong>guardar PDF</strong>.
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/70 space-y-1">
+            <p class="font-bold text-sm text-amber-950 dark:text-amber-200">Permanent Address Change (24h)</p>
+            <p class="text-amber-950/90 dark:text-amber-200/90 leading-relaxed">
+              <strong>Preguntar siempre al miembro</strong> si desea realizar más de una actualización en la misma llamada, ya que solo podemos hacer actualizaciones <strong>cada 24 horas</strong>.
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/35 border border-rose-200 dark:border-rose-800/70 space-y-1">
+            <p class="font-bold text-sm text-rose-950 dark:text-rose-200">Critical Demographic</p>
+            <p class="text-rose-950/90 dark:text-rose-200/90 leading-relaxed">
+              En campos marcados como <strong>Critical Demographic no podemos realizar ningún cambio</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECCIÓN 3: SISTEMAS, ESTACIÓN DE TRABAJO Y ESTADOS EN GENESYS         -->
+    <!-- ===================================================================== -->
+    <section id="sec-systems" class="hub-section space-y-4">
+      <div class="flex items-center gap-2.5 border-b border-slate-200 dark:border-slate-800 pb-2">
+        <span class="w-7 h-7 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center">3</span>
+        <div>
+          <h2 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">Sistemas, Estación de Trabajo y Estados en Genesys</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Orden estricto de inicio de sesión, distribución de monitores, Phonebook y estados permitidos</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <!-- Login Sequence & Dual Monitor Setup -->
+        <div data-searchable class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft space-y-4">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Secuencia de Inicio y Configuración (2 Monitores)</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Orden obligatorio de apertura al iniciar turno</p>
+          </div>
+
+          <!-- Login Steps -->
+          <div class="flex flex-wrap items-center gap-2 p-3 rounded-xl bg-slate-900 text-white text-xs font-mono">
+            <span class="px-2.5 py-1 rounded-lg bg-emerald-600 font-bold">1. GD2 Bot (1ra app)</span>
+            <span class="text-emerald-400">&rarr;</span>
+            <span class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700">2. HSS Edge</span>
+            <span class="text-emerald-400">&rarr;</span>
+            <span class="px-2.5 py-1 rounded-lg bg-indigo-600 font-bold">3. Genesys: America (US West) &rarr; More login options &rarr; HumanaCore1</span>
+          </div>
+
+          <!-- 2 Monitors Visual Map -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div class="p-3.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border-2 border-emerald-500/40 space-y-1">
+              <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Monitor 1</span>
+              <p class="font-bold text-sm text-slate-900 dark:text-white">Dedicado a CRM</p>
+              <p class="text-slate-600 dark:text-slate-300">Main System, <strong>CI</strong>, plataforma Humana para miembros de Medicare.</p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/30 border-2 border-indigo-500/40 space-y-1">
+              <span class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-700 dark:text-indigo-400">Monitor 2</span>
+              <p class="font-bold text-sm text-slate-900 dark:text-white">Herramientas de Apoyo</p>
+              <p class="text-slate-600 dark:text-slate-300"><strong>QuickStart</strong>, <strong>Mentor</strong>, <strong>Dig ToolBar</strong> (y esta guía).</p>
+            </div>
+          </div>
+
+          <!-- Tools & Screen Hygiene -->
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-2 text-xs">
+            <p class="font-bold text-slate-900 dark:text-white">Ecosistema y Hábitos de Seguridad:</p>
+            <ul class="text-slate-700 dark:text-slate-300 space-y-1">
+              <li>&bull; <strong>Herramientas:</strong> <em>Genesys Softphone</em> (menú, call center, phone status, interactions), <em>Agent Assist</em> (transcripción), <em>Debit - Benefits</em> (ver beneficios del plan), Portal: <button type="button" onclick="copyScript('Plus.humana.com', 'Portal Plus.humana.com')" class="font-mono font-bold text-emerald-700 dark:text-emerald-400 underline">Plus.humana.com</button>.</li>
+              <li>&bull; <strong>Screen Management:</strong> Cerrar pestañas sin uso al terminar, mantener visual de todo lo que se usará y <strong>bloquear pantalla al dejar el escritorio</strong> (<em>lock screen when leaving desk</em>).</li>
+            </ul>
+          </div>
+
+          <!-- Phonebook Transfer Path -->
+          <div class="p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/70 space-y-1.5 text-xs">
+            <div class="flex items-center justify-between">
+              <p class="font-bold text-amber-950 dark:text-amber-200">Phonebook (Para realizar transferencias):</p>
+              <button
+                type="button"
+                onclick="copyScript('CWP', 'Código CWP (CenterWell Pharmacy)')"
+                class="px-2 py-0.5 rounded bg-amber-600 text-white font-mono text-[11px] font-bold hover:bg-amber-700"
+              >
+                Copiar CWP
+              </button>
+            </div>
+            <p class="font-mono text-[11px] text-amber-950 dark:text-amber-200 bg-white dark:bg-slate-900 p-2 rounded-lg border border-amber-200 dark:border-amber-800">
+              Phonebook &rarr; Dropdown: Medicare and Medicaid &rarr; Search: <strong>CWP</strong> &rarr; CenterWell Pharmacy
+            </p>
+          </div>
+        </div>
+
+        <!-- Genesys Status Table -->
+        <div data-searchable class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white">Estados en Genesys (Status Selection)</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Phone Selection muestra tu correo y teléfono actual</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300">
+              Nunca usar "Away"
+            </span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 uppercase text-[10px] tracking-wider">
+                  <th class="py-2 pr-3">Estado</th>
+                  <th class="py-2">Uso / Regla Operativa</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                <tr>
+                  <td class="py-2 pr-3 font-bold text-emerald-700 dark:text-emerald-400 whitespace-nowrap">On Queue</td>
+                  <td class="py-2 text-slate-700 dark:text-slate-300">Conectado para recibir llamadas (<em>logged to take calls</em>).</td>
+                </tr>
+                <tr>
+                  <td class="py-2 pr-3 font-bold text-teal-700 dark:text-teal-400 whitespace-nowrap">Available</td>
+                  <td class="py-2 text-slate-700 dark:text-slate-300">Conectado para iniciar trabajo (<em>logged to begin work</em> &bull; 2 min).</td>
+                </tr>
+                <tr>
+                  <td class="py-2 pr-3 font-bold text-indigo-700 dark:text-indigo-400 whitespace-nowrap">Busy</td>
+                  <td class="py-2 text-slate-700 dark:text-slate-300">Realizando trabajo productivo basado en miembro.</td>
+                </tr>
+                <tr class="bg-rose-50/90 dark:bg-rose-950/40">
+                  <td class="py-2 pr-3 font-extrabold text-rose-700 dark:text-rose-400 whitespace-nowrap">Away</td>
+                  <td class="py-2 font-bold text-rose-800 dark:text-rose-300">PROHIBIDO — Do not use.</td>
+                </tr>
+                <tr>
+                  <td class="py-2 pr-3 font-bold text-amber-700 dark:text-amber-400 whitespace-nowrap">Break</td>
+                  <td class="py-2 text-slate-700 dark:text-slate-300">Descanso programado de <strong>15 minutos</strong> (terminar llamada activa antes de salir).</td>
+                </tr>
+                <tr>
+                  <td class="py-2 pr-3 font-bold text-amber-700 dark:text-amber-400 whitespace-nowrap">Wellness Break</td>
+                  <td class="py-2 text-slate-700 dark:text-slate-300">Tiempo adicional de bienestar.</td>
+                </tr>
+                <tr>
+                  <td class="py-2 pr-3 font-bold text-slate-800 dark:text-slate-200 whitespace-nowrap">Meal</td>
+                  <td class="py-2 text-slate-700 dark:text-slate-300">Fuera de cola (<em>not on queue</em>) &rarr; Almuerzo / cena.</td>
+                </tr>
+                <tr>
+                  <td class="py-2 pr-3 font-bold text-slate-800 dark:text-slate-200 whitespace-nowrap">Meeting</td>
+                  <td class="py-2 text-slate-700 dark:text-slate-300">Team meeting, coaching o huddle.</td>
+                </tr>
+                <tr>
+                  <td class="py-2 pr-3 font-bold text-slate-800 dark:text-slate-200 whitespace-nowrap">Training</td>
+                  <td class="py-2 text-slate-700 dark:text-slate-300">Participando en capacitación (<em>New hiring &rarr; on queue &rarr; calls</em>).</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECCIÓN 4: FULFILLMENT (OMS), ENROLLMENT Y COMMUNICATION CALLS (RTI)  -->
+    <!-- ===================================================================== -->
+    <section id="sec-fulfillment" class="hub-section space-y-4">
+      <div class="flex items-center gap-2.5 border-b border-slate-200 dark:border-slate-800 pb-2">
+        <span class="w-7 h-7 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center">4</span>
+        <div>
+          <h2 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">Fulfillment (OMS), Enrollment Search y Communication Calls</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Checklist interactivo de pedidos OMS, tarjetas ID, Unknown Member y cartas en RTI / EMME</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <!-- Interactive OMS Step-by-Step Tracker -->
+        <div data-searchable class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft space-y-3.5">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white">Order Management System (OMS)</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Haz clic en cada paso para marcar avance durante la llamada</p>
+            </div>
+            <button type="button" id="oms-reset-btn" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
+              Reiniciar pasos
+            </button>
+          </div>
+
+          <div class="space-y-2 text-xs">
+            <label class="oms-step flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 cursor-pointer">
+              <input type="checkbox" class="w-4 h-4 accent-emerald-600 rounded" />
+              <span><strong>Paso 1:</strong> Ir a <span class="font-mono font-bold">RSO &rarr; Fulfillment</span></span>
+            </label>
+            <label class="oms-step flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 cursor-pointer">
+              <input type="checkbox" class="w-4 h-4 accent-emerald-600 rounded" />
+              <span><strong>Paso 2:</strong> Abrir <span class="font-mono font-bold">Links &rarr; OMS</span></span>
+            </label>
+            <label class="oms-step flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 cursor-pointer">
+              <input type="checkbox" class="w-4 h-4 accent-emerald-600 rounded" />
+              <span><strong>Paso 3:</strong> Seleccionar el año (<span class="font-mono font-bold">Select year</span>)</span>
+            </label>
+            <label class="oms-step flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 cursor-pointer">
+              <input type="checkbox" class="w-4 h-4 accent-emerald-600 rounded" />
+              <span><strong>Paso 4:</strong> Buscar contrato (<span class="font-mono font-bold">Hxxx</span>): <strong>Contract ID + PBP Code + Segment C</strong></span>
+            </label>
+            <label class="oms-step flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 cursor-pointer">
+              <input type="checkbox" class="w-4 h-4 accent-emerald-600 rounded" />
+              <span><strong>Paso 5:</strong> <span class="font-mono font-bold">Review cart &rarr; Checkout details &rarr; Place Address</span></span>
+            </label>
+            <label class="oms-step flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 cursor-pointer">
+              <input type="checkbox" class="w-4 h-4 accent-emerald-600 rounded" />
+              <span><strong>Paso 6:</strong> <span class="font-mono font-bold">Review order &rarr; Submit order</span></span>
+            </label>
+            <label class="oms-step flex items-center gap-3 p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 cursor-pointer">
+              <input type="checkbox" class="w-4 h-4 accent-emerald-600 rounded" />
+              <span class="font-bold text-emerald-900 dark:text-emerald-200">Paso 7 (Obligatorio): Colocar el <strong>Order Number en QuickStart</strong>.</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Fulfillment Materials, ID Card & Enrollment Search -->
+        <div class="space-y-4">
+          <div data-searchable class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft space-y-3">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Materiales Fulfillment e ID Card Management</h3>
+
+            <div class="p-3.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/35 border border-emerald-200 dark:border-emerald-800/70 text-xs space-y-1">
+              <p class="font-bold text-emerald-950 dark:text-emerald-200">Solicitud de Tarjeta (ID Card):</p>
+              <p class="font-mono text-emerald-900 dark:text-emerald-300">
+                ID Card Management &rarr; Botón <strong>[+]</strong> &rarr; Request ID Card &rarr; <strong>Just confirm PCP</strong>
+              </p>
+            </div>
+
+            <div class="space-y-1.5 text-xs">
+              <p class="font-bold text-slate-700 dark:text-slate-300">Copias de beneficios disponibles en OMS:</p>
+              <div class="flex flex-wrap gap-1.5">
+                <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-semibold">Evidence of Coverage (EOC)</span>
+                <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-semibold">Welcome Kit</span>
+                <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-semibold">Medicare Handbook</span>
+                <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-semibold">Pharmacy Sales Material</span>
+                <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-semibold">Provider Directory</span>
+                <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-semibold">Rx Pharmacy</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Enrollment Search & Unknown Member -->
+          <div data-searchable class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft space-y-2.5 text-xs">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-bold text-slate-900 dark:text-white">Enrollment Search &amp; Unknown Member</h3>
+              <span class="px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 font-bold text-[11px]">Válido en Ghost Calls</span>
+            </div>
+            <ul class="text-slate-700 dark:text-slate-300 space-y-1.5">
+              <li>&bull; <strong>Ruta:</strong> <span class="font-mono font-bold">Enrollment Search &rarr; Application Search</span>.</li>
+              <li>&bull; <strong>Create Unknown Member:</strong> Llenar los campos obligatorios marcados con <strong class="text-rose-600 font-mono">*</strong> (asterisco).</li>
+              <li>&bull; <strong>Home State / Province:</strong> Seleccionar <strong>cualquier opción</strong>.</li>
+              <li>&bull; <strong>Guardar:</strong> Seleccionar <strong>With &amp; About</strong> &rarr; <span class="font-mono font-bold">Save and continue</span>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Communication Calls, RTI Letters & EMME -->
+      <div data-searchable class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft space-y-3.5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-2.5">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Communication Calls, Cartas (RTI / EMME) y Preferencias</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Cuando el miembro recibe cartas o mensajes, llamadas VAT, Smart Summary o Forms</p>
+          </div>
+          <span class="font-mono text-xs font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-3 py-1 rounded-lg self-start sm:self-auto">
+            VAT = Voice Automated Technology
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs">
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-1.5">
+            <p class="font-bold text-sm text-slate-900 dark:text-white">1. Clasificación e Intents</p>
+            <p class="font-mono bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded border border-slate-200 dark:border-slate-700 text-indigo-800 dark:text-indigo-300">
+              Classification: <strong>Communication</strong>
+            </p>
+            <p class="font-semibold text-slate-500 dark:text-slate-400">Possible Intents:</p>
+            <ul class="space-y-1 pl-2.5 border-l-2 border-emerald-500 text-slate-700 dark:text-slate-300">
+              <li>&bull; Got a Letter</li>
+              <li>&bull; Help me Read / Understand</li>
+              <li>&bull; Member Preferences</li>
+            </ul>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/35 border border-emerald-200 dark:border-emerald-800/70 space-y-1.5">
+            <p class="font-bold text-sm text-emerald-950 dark:text-emerald-200">2. Real-Time Interactions (RTI)</p>
+            <ul class="text-emerald-950/90 dark:text-emerald-200/90 space-y-1.5">
+              <li>&bull; Ubicado en <strong>CRM</strong>: punto de partida para todas las <em>Communications Calls</em>.</li>
+              <li>&bull; Muestra correspondencia reciente (<em>recent correspondence</em>).</li>
+              <li>&bull; <strong>Abrir PDF:</strong> Ir a <strong>E</strong> &rarr; <strong>Clic en la flecha y luego en el ícono del ojo</strong>.</li>
+            </ul>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/35 border border-indigo-200 dark:border-indigo-800/70 space-y-1.5">
+            <p class="font-bold text-sm text-indigo-950 dark:text-indigo-200">3. EMME y Member Preferences</p>
+            <div class="bg-white dark:bg-slate-900 rounded-lg p-2 border border-indigo-200 dark:border-indigo-800 font-mono text-indigo-900 dark:text-indigo-300">
+              EMME Access &rarr; Umbrella tab &rarr; Create Letter
+            </div>
+            <p class="text-indigo-950/90 dark:text-indigo-200/90 leading-relaxed">
+              <strong>Member Preferences:</strong> Editar cómo el miembro desea recibir comunicaciones de Humana.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECCIÓN 5: MEDICARE, PAGADORES, CAHPS Y REFERENCIA RÁPIDA             -->
+    <!-- ===================================================================== -->
+    <section id="sec-medicare" class="hub-section space-y-4">
+      <div class="flex items-center gap-2.5 border-b border-slate-200 dark:border-slate-800 pb-2">
+        <span class="w-7 h-7 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center">5</span>
+        <div>
+          <h2 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">Partes de Medicare, Pagadores, CAHPS y Referencia Rápida</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Conceptos fundamentales de cobertura, encuestas Star Rating y credenciales de práctica</p>
+        </div>
+      </div>
+
+      <!-- Parts of Medicare (A, B, C, D) -->
+      <div data-searchable class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div class="card-hover bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-soft space-y-1.5">
+          <span class="inline-block px-2.5 py-0.5 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-extrabold text-xs">Parte A</span>
+          <h3 class="font-bold text-sm text-slate-900 dark:text-white">Hospital Staying &amp; Care</h3>
+          <p class="text-xs text-slate-600 dark:text-slate-300">Gratis si calificó por historial laboral; de lo contrario es opcional pagada (<em>you have to pay for it — opt/paid</em>).</p>
+        </div>
+
+        <div class="card-hover bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-soft space-y-1.5">
+          <span class="inline-block px-2.5 py-0.5 rounded-lg bg-teal-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300 font-extrabold text-xs">Parte B</span>
+          <h3 class="font-bold text-sm text-slate-900 dark:text-white">Medical Assistance / Checkups</h3>
+          <p class="text-xs text-slate-600 dark:text-slate-300">Consultas médicas, chequeos preventivos y atención ambulatoria.</p>
+        </div>
+
+        <div class="card-hover bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-soft space-y-1.5">
+          <span class="inline-block px-2.5 py-0.5 rounded-lg bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 font-extrabold text-xs">Parte C</span>
+          <h3 class="font-bold text-sm text-slate-900 dark:text-white">Medicare Advantage</h3>
+          <p class="text-xs text-slate-600 dark:text-slate-300">Planes integrales que incluyen beneficios extra como transporte y algunos medicamentos.</p>
+        </div>
+
+        <div class="card-hover bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-soft space-y-1.5">
+          <span class="inline-block px-2.5 py-0.5 rounded-lg bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 font-extrabold text-xs">Parte D</span>
+          <h3 class="font-bold text-sm text-slate-900 dark:text-white">Drugs / Medicines</h3>
+          <p class="text-xs text-slate-600 dark:text-slate-300">Cobertura especializada para medicamentos recetados.</p>
+        </div>
+      </div>
+
+      <!-- Payers & CAHPS Star Rating -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <!-- Payer Models -->
+        <div data-searchable class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft space-y-3 text-xs">
+          <h3 class="text-base font-bold text-slate-900 dark:text-white">Tipos de Pagadores (Healthcare Payers)</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
+              <p class="font-bold text-slate-900 dark:text-white">Single-payer</p>
+              <p class="text-slate-600 dark:text-slate-300 mt-0.5">Mantiene los costos bajos y asegura que todos reciban los mismos beneficios.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
+              <p class="font-bold text-slate-900 dark:text-white">Multi-payer</p>
+              <p class="text-slate-600 dark:text-slate-300 mt-0.5">Cada persona está cubierta por una aseguradora y paga muy poco de su bolsillo.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
+              <p class="font-bold text-slate-900 dark:text-white">Private Payer</p>
+              <p class="text-slate-600 dark:text-slate-300 mt-0.5">Las personas pagan su atención médica por sí mismas sin ayuda de seguro.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
+              <p class="font-bold text-slate-900 dark:text-white">Employee Payer</p>
+              <p class="text-slate-600 dark:text-slate-300 mt-0.5">Parte del cheque de pago del empleado se destina a pagar el seguro médico.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- CAHPS Survey & Star Rating -->
+        <div data-searchable class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft space-y-3 text-xs">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">CAHPS Survey &rarr; Star Rating</h3>
+            <span class="px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 font-extrabold">4+ Stars = Bono</span>
+          </div>
+          <p class="text-slate-600 dark:text-slate-300">
+            Un <strong>proveedor externo (third-party vendor)</strong> envía la encuesta CAHPS a miembros seleccionados al azar para evaluar los planes con mejor valor y servicio.
+          </p>
+          <ul class="space-y-1.5 text-slate-700 dark:text-slate-200 bg-amber-50/70 dark:bg-amber-950/30 p-3.5 rounded-xl border border-amber-200 dark:border-amber-800/70">
+            <li>&bull; <strong>Star Rating de 4 o más:</strong> Resulta en un mayor pago de bono (<em>higher bonus pay</em>).</li>
+            <li>&bull; <strong>Mejora de planes:</strong> El dinero del bono se usa para mejorar planes y ofrecer <strong>beneficios adicionales</strong>.</li>
+            <li>&bull; <strong>Ahorro al miembro:</strong> El bono ayuda a reducir los costos de bolsillo (<em>member out-of-pocket costs</em>).</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Consolidated Glossary & Sandbox Credentials -->
+      <div data-searchable class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Glosario Rápido y Entorno de Pruebas (Sagility)</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Siglas consolidadas sin duplicados y credenciales de capacitación</p>
+          </div>
+          <button
+            type="button"
+            id="toggle-sandbox-btn"
+            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-colors self-start sm:self-auto"
+          >
+            <span id="toggle-sandbox-label">Mostrar datos de práctica</span>
+          </button>
+        </div>
+
+        <!-- Consolidated Acronym Chips -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 text-xs">
+          <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
+            <span class="font-mono font-extrabold text-emerald-700 dark:text-emerald-400 block">CMS</span>
+            <span class="text-slate-600 dark:text-slate-300 text-[11px]">Centers for Medicare &amp; Medicaid Services</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
+            <span class="font-mono font-extrabold text-indigo-700 dark:text-indigo-400 block">SAN#</span>
+            <span class="text-slate-600 dark:text-slate-300 text-[11px]">Sales Agent Number</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
+            <span class="font-mono font-extrabold text-teal-700 dark:text-teal-400 block">EOC</span>
+            <span class="text-slate-600 dark:text-slate-300 text-[11px]">Evidence of Coverage</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
+            <span class="font-mono font-extrabold text-amber-700 dark:text-amber-400 block">OMS</span>
+            <span class="text-slate-600 dark:text-slate-300 text-[11px]">Order Management System</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
+            <span class="font-mono font-extrabold text-purple-700 dark:text-purple-400 block">RTI</span>
+            <span class="text-slate-600 dark:text-slate-300 text-[11px]">Real-Time Interactions</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
+            <span class="font-mono font-extrabold text-rose-700 dark:text-rose-400 block">VAT</span>
+            <span class="text-slate-600 dark:text-slate-300 text-[11px]">Voice Automated Technology</span>
+          </div>
+        </div>
+
+        <!-- Collapsible Sandbox Panel -->
+        <div id="sandbox-data-panel" class="hidden rounded-2xl bg-slate-900 text-slate-200 p-4 border border-slate-700 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Sagility Sandbox &amp; Notas de Referencia</span>
+            <span class="text-[11px] font-mono text-slate-400">Capacitación</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+            <div class="bg-slate-800/90 rounded-xl p-3 border border-slate-700 flex items-center justify-between gap-2">
+              <div>
+                <span class="text-slate-400 block text-[11px]">IDs de Capacitación / Ref.</span>
+                <span class="font-mono font-bold text-white">212892 &bull; 127259</span>
+              </div>
+              <button type="button" onclick="copyScript('212892', 'ID 212892')" class="px-2.5 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-[11px] font-bold">Copiar</button>
+            </div>
+
+            <div class="bg-slate-800/90 rounded-xl p-3 border border-slate-700 flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <span class="text-slate-400 block text-[11px]">Usuario Sagility</span>
+                <span class="font-mono font-semibold text-emerald-300 truncate block">dcornejoguzman@humana.com</span>
+              </div>
+              <button type="button" onclick="copyScript('dcornejoguzman@humana.com', 'Correo Sagility')" class="px-2.5 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-[11px] font-bold shrink-0">Copiar</button>
+            </div>
+
+            <div class="bg-slate-800/90 rounded-xl p-3 border border-slate-700 flex items-center justify-between gap-2">
+              <div>
+                <span class="text-slate-400 block text-[11px]">Password Pruebas</span>
+                <span class="font-mono font-bold text-amber-300">Humana#12345</span>
+              </div>
+              <button type="button" onclick="copyScript('Humana#12345', 'Password de pruebas')" class="px-2.5 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-[11px] font-bold">Copiar</button>
+            </div>
+
+            <div class="bg-slate-800/90 rounded-xl p-3 border border-slate-700 flex items-center justify-between gap-2">
+              <div>
+                <span class="text-slate-400 block text-[11px]">CRM Sandbox Link</span>
+                <span class="font-mono font-bold text-indigo-300">go/crmsandbox</span>
+              </div>
+              <button type="button" onclick="copyScript('go/crmsandbox', 'go/crmsandbox')" class="px-2.5 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-[11px] font-bold">Copiar</button>
+            </div>
+
+            <div class="bg-slate-800/90 rounded-xl p-3 border border-slate-700 sm:col-span-2">
+              <span class="text-slate-400 block text-[11px]">Contacto de Referencia</span>
+              <span class="font-semibold text-white">Josue &rarr; Alex Javier Gomez Avila</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast Notification (Replaces alert() cleanly) -->
+  <div
+    id="toast-notification"
+    class="fixed bottom-4 right-4 z-50 pointer-events-none opacity-0 translate-y-2 transition-all duration-200 bg-slate-900 dark:bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg border border-slate-700 dark:border-emerald-400 text-xs font-bold flex items-center gap-2"
+  >
+    <svg class="w-4 h-4 text-emerald-400 dark:text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+    </svg>
+    <span id="toast-message">Copiado al portapapeles</span>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- INTERACTIVE JAVASCRIPT CONTROLLER                                     -->
+  <!-- ===================================================================== -->
+  <script>
+    // 1. Toast Notification & Safe Clipboard Copy (iFrame compatible)
+    let toastTimeout = null;
+    function showToast(message) {
+      const toast = document.getElementById('toast-notification');
+      const toastMsg = document.getElementById('toast-message');
+      toastMsg.textContent = message;
+      toast.classList.remove('opacity-0', 'translate-y-2');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-2');
+      }, 2200);
+    }
+
+    function copyScript(text, label) {
+      try {
+        const tempInput = document.createElement('textarea');
+        tempInput.value = text;
+        tempInput.style.position = 'fixed';
+        tempInput.style.opacity = '0';
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        showToast('Copiado: ' + (label || text));
+      } catch (err) {
+        showToast('No se pudo copiar automáticamente');
+      }
+    }
+
+    // 2. Dynamic Closing Script Topic Personalization
+    const scriptTopicInput = document.getElementById('script-topic-input');
+    const closingTopicSpan = document.getElementById('closing-topic-span');
+    const copyClosingBtn = document.getElementById('copy-closing-btn');
+
+    scriptTopicInput.addEventListener('input', () => {
+      const val = scriptTopicInput.value.trim();
+      closingTopicSpan.textContent = val ? val : '...';
+    });
+
+    copyClosingBtn.addEventListener('click', () => {
+      const val = scriptTopicInput.value.trim();
+      const topicPart = val ? val : '...';
+      const fullClosing = `It's been a pleasure helping you with ${topicPart} Thank you for calling Humana, we are always here to help.`;
+      copyScript(fullClosing, 'Closing Script');
+    });
+
+    // 3. Dark / Light Eye-Comfort Theme Toggle
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    themeToggleBtn.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      const isDark = document.documentElement.classList.contains('dark');
+      showToast(isDark ? 'Modo oscuro activado' : 'Modo claro activado');
+    });
+
+    // 4. Live Call Handle-Time Timer
+    let timerSeconds = 0;
+    let timerInterval = null;
+    let isTimerRunning = false;
+
+    const timerDisplay = document.getElementById('call-timer-display');
+    const timerToggleBtn = document.getElementById('timer-toggle-btn');
+    const timerResetBtn = document.getElementById('timer-reset-btn');
+    const callStatusDot = document.getElementById('call-status-dot');
+
+    function formatTime(sec) {
+      const mins = String(Math.floor(sec / 60)).padStart(2, '0');
+      const remSec = String(sec % 60).padStart(2, '0');
+      return `${mins}:${remSec}`;
+    }
+
+    timerToggleBtn.addEventListener('click', () => {
+      if (isTimerRunning) {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        timerToggleBtn.textContent = 'Reanudar';
+        timerToggleBtn.classList.remove('bg-amber-600', 'hover:bg-amber-700');
+        timerToggleBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+        callStatusDot.classList.remove('bg-emerald-500', 'animate-call-dot');
+        callStatusDot.classList.add('bg-amber-400');
+      } else {
+        isTimerRunning = true;
+        timerToggleBtn.textContent = 'Pausar';
+        timerToggleBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+        timerToggleBtn.classList.add('bg-amber-600', 'hover:bg-amber-700');
+        callStatusDot.classList.remove('bg-slate-400', 'bg-amber-400');
+        callStatusDot.classList.add('bg-emerald-500', 'animate-call-dot');
+
+        timerInterval = setInterval(() => {
+          timerSeconds++;
+          timerDisplay.textContent = formatTime(timerSeconds);
+          if (timerSeconds >= 900) {
+            timerDisplay.classList.add('text-amber-600', 'dark:text-amber-400');
+          }
+        }, 1000);
+      }
+    });
+
+    timerResetBtn.addEventListener('click', () => {
+      clearInterval(timerInterval);
+      isTimerRunning = false;
+      timerSeconds = 0;
+      timerDisplay.textContent = '00:00';
+      timerDisplay.classList.remove('text-amber-600', 'dark:text-amber-400');
+      timerToggleBtn.textContent = 'Iniciar';
+      timerToggleBtn.classList.remove('bg-amber-600', 'hover:bg-amber-700');
+      timerToggleBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+      callStatusDot.classList.remove('bg-emerald-500', 'bg-amber-400', 'animate-call-dot');
+      callStatusDot.classList.add('bg-slate-400');
+    });
+
+    // 5. Interactive Caller Authentication Calculator
+    const checksA = document.querySelectorAll('.auth-check-a');
+    const checksB = document.querySelectorAll('.auth-check-b');
+    const colACount = document.getElementById('col-a-count');
+    const colBCount = document.getElementById('col-b-count');
+    const authStatusBadge = document.getElementById('auth-status-badge');
+    const authRedBtn = document.getElementById('auth-red-btn');
+    const authResetBtn = document.getElementById('auth-reset-btn');
+    const authRedAlert = document.getElementById('auth-red-alert');
+    let isRedUnauthenticated = false;
+
+    function updateAuthStatus() {
+      const countA = Array.from(checksA).filter(c => c.checked).length;
+      const countB = Array.from(checksB).filter(c => c.checked).length;
+
+      colACount.textContent = `${countA} / 1`;
+      colBCount.textContent = `${countB} / 2`;
+
+      if (isRedUnauthenticated) {
+        authRedAlert.classList.remove('hidden');
+        authStatusBadge.className = 'px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-rose-600 text-white border border-rose-700 shadow-sm';
+        authStatusBadge.textContent = "ESTATUS 'RED' — CALLER UNAUTHENTICATED";
+        return;
+      } else {
+        authRedAlert.classList.add('hidden');
+      }
+
+      if (countA >= 1 && countB >= 2) {
+        authStatusBadge.className = 'px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-emerald-600 text-white border border-emerald-700 shadow-sm';
+        authStatusBadge.textContent = 'CALLER AUTHENTICATED (PHI Autorizado)';
+      } else {
+        authStatusBadge.className = 'px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700';
+        authStatusBadge.textContent = `Pendiente (${countA}/1 Obligatorio • ${countB}/2 Adicionales)`;
+      }
+    }
+
+    checksA.forEach(c => c.addEventListener('change', () => {
+      if (c.checked) isRedUnauthenticated = false;
+      updateAuthStatus();
+    }));
+
+    checksB.forEach(c => c.addEventListener('change', () => {
+      if (c.checked) isRedUnauthenticated = false;
+      updateAuthStatus();
+    }));
+
+    authRedBtn.addEventListener('click', () => {
+      isRedUnauthenticated = !isRedUnauthenticated;
+      updateAuthStatus();
+    });
+
+    authResetBtn.addEventListener('click', () => {
+      checksA.forEach(c => c.checked = false);
+      checksB.forEach(c => c.checked = false);
+      isRedUnauthenticated = false;
+      updateAuthStatus();
+    });
+
+    // 6. OMS Step-by-Step Reset
+    const omsCheckboxes = document.querySelectorAll('.oms-step input[type="checkbox"]');
+    const omsResetBtn = document.getElementById('oms-reset-btn');
+    omsResetBtn.addEventListener('click', () => {
+      omsCheckboxes.forEach(cb => cb.checked = false);
+      showToast('Pasos de OMS reiniciados');
+    });
+
+    // 7. Sandbox Data Toggle
+    const toggleSandboxBtn = document.getElementById('toggle-sandbox-btn');
+    const toggleSandboxLabel = document.getElementById('toggle-sandbox-label');
+    const sandboxDataPanel = document.getElementById('sandbox-data-panel');
+
+    toggleSandboxBtn.addEventListener('click', () => {
+      const isHidden = sandboxDataPanel.classList.contains('hidden');
+      if (isHidden) {
+        sandboxDataPanel.classList.remove('hidden');
+        toggleSandboxLabel.textContent = 'Ocultar datos de práctica';
+      } else {
+        sandboxDataPanel.classList.add('hidden');
+        toggleSandboxLabel.textContent = 'Mostrar datos de práctica';
+      }
+    });
+
+    // 8. Category Navigation & Live Search Filtering
+    const navPills = document.querySelectorAll('.nav-pill');
+    const sections = document.querySelectorAll('.hub-section');
+    const searchableCards = document.querySelectorAll('[data-searchable]');
+
+    const searchInput = document.getElementById('global-search');
+    const clearSearchBtn = document.getElementById('clear-search-btn');
+    const searchStatusBar = document.getElementById('search-status-bar');
+    const searchMatchCount = document.getElementById('search-match-count');
+    const searchQueryLabel = document.getElementById('search-query-label');
+    const bannerResetBtn = document.getElementById('banner-reset-btn');
+    const emptyResetBtn = document.getElementById('empty-reset-btn');
+    const noResultsBox = document.getElementById('no-results-box');
+
+    let activeCategory = 'all';
+
+    function applyFilters() {
+      const rawQuery = searchInput.value.trim();
+      const query = rawQuery.toLowerCase();
+
+      if (rawQuery.length > 0) {
+        clearSearchBtn.classList.remove('hidden');
+      } else {
+        clearSearchBtn.classList.add('hidden');
+      }
+
+      let totalMatches = 0;
+
+      sections.forEach(sec => {
+        const matchesCategory = activeCategory === 'all' || sec.id === activeCategory;
+        if (!matchesCategory) {
+          sec.classList.add('hidden');
+          return;
+        }
+
+        const cardsInSection = sec.querySelectorAll('[data-searchable]');
+        let sectionVisibleCards = 0;
+
+        cardsInSection.forEach(card => {
+          const text = card.textContent.toLowerCase();
+          const isMatch = !query || text.includes(query);
+          if (isMatch) {
+            card.classList.remove('hidden');
+            sectionVisibleCards++;
+            totalMatches++;
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+
+        if (sectionVisibleCards > 0) {
+          sec.classList.remove('hidden');
+        } else {
+          sec.classList.add('hidden');
+        }
+      });
+
+      if (query.length > 0) {
+        searchStatusBar.classList.remove('hidden');
+        searchMatchCount.textContent = totalMatches;
+        searchQueryLabel.textContent = rawQuery;
+      } else {
+        searchStatusBar.classList.add('hidden');
+      }
+
+      if (totalMatches === 0) {
+        noResultsBox.classList.remove('hidden');
+      } else {
+        noResultsBox.classList.add('hidden');
+      }
+    }
+
+    function setActiveNavigation(targetId) {
+      activeCategory = targetId;
+      navPills.forEach(pill => {
+        if (pill.dataset.nav === targetId) {
+          pill.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300');
+          pill.classList.add('bg-emerald-600', 'text-white', 'shadow-sm');
+        } else {
+          pill.classList.remove('bg-emerald-600', 'text-white', 'shadow-sm');
+          pill.classList.add('bg-slate-100', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300');
+        }
+      });
+      applyFilters();
+    }
+
+    navPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        setActiveNavigation(pill.dataset.nav);
+      });
+    });
+
+    searchInput.addEventListener('input', applyFilters);
+
+    function resetAllFilters() {
+      searchInput.value = '';
+      setActiveNavigation('all');
+    }
+
+    clearSearchBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      applyFilters();
+      searchInput.focus();
+    });
+
+    bannerResetBtn.addEventListener('click', resetAllFilters);
+    emptyResetBtn.addEventListener('click', resetAllFilters);
+
+    // Keyboard shortcut '/' to focus instant search quickly during calls
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement !== searchInput && document.activeElement !== scriptTopicInput) {
+        e.preventDefault();
+        searchInput.focus();
+      } else if (e.key === 'Escape' && document.activeElement === searchInput) {
+        searchInput.blur();
+      }
+    });
+
+    // Initialize default view
+    setActiveNavigation('all');
+  </script>
+</body>
+</html>
