@@ -180,6 +180,9 @@
         <button type="button" data-nav="sec-medicare" class="nav-pill px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700">
           5. Beneficios, Citas (IHWA) y Medicare
         </button>
+        <button type="button" data-nav="sec-assessment" class="nav-pill px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700">
+          6. Assessment / Quiz (30)
+        </button>
       </nav>
     </div>
   </header>
@@ -1452,6 +1455,7 @@
               <li>&bull; Ubicado en <strong>CRM</strong>: punto de partida para todas las <em>Communications Calls</em>.</li>
               <li>&bull; Muestra correspondencia reciente (<em>recent correspondence</em>).</li>
               <li>&bull; <strong>Abrir PDF:</strong> Ir a <strong>E</strong> &rarr; <strong>Clic en la flecha y luego en el ícono del ojo</strong>.</li>
+              <li>&bull; <strong>Flujo "Got a Letter":</strong> Verificar <strong>RTI</strong> para buscar la carta &rarr; luego ir a <strong>Authorization and Referral</strong> &rarr; revisar las autorizaciones y <strong>quién solicitó la carta/autorización</strong>.</li>
             </ul>
           </div>
 
@@ -1500,11 +1504,11 @@
         <div data-searchable class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-soft space-y-3 text-xs">
           <div class="flex items-center justify-between gap-2">
             <div>
-              <h3 class="text-base font-bold text-slate-900 dark:text-white">Búsqueda de Doctores (Find Care y PAAG)</h3>
-              <p class="text-xs text-slate-500 dark:text-slate-400">Localización de Physician, Chiropractor u otro médico para el miembro</p>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white">Búsqueda de Doctores (Find Care, PCP y PAAG)</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Localización de Physician, Chiropractor, PCP asignado u otro médico</p>
             </div>
             <span class="px-2.5 py-0.5 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-bold text-[11px] shrink-0">
-              Find Care / PAAG
+              Find Care / PCP / PAAG
             </span>
           </div>
 
@@ -1527,7 +1531,23 @@
           <div class="p-3.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/35 border border-amber-200 dark:border-amber-800/70 space-y-1">
             <p class="font-extrabold text-amber-900 dark:text-amber-300">2. Si el proveedor NO aparece en Find Care:</p>
             <p class="text-amber-950/90 dark:text-amber-200/90 leading-relaxed">
-              Utilizar la herramienta <strong>PAAG</strong> para completar la búsqueda (<em>If provider is not appearing in Find Care, use PAAG</em>).
+              Utilizar la herramienta <strong>PAAG</strong> para completar la búsqueda (<em>Find Care &rarr; use PAAG</em>).
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/35 border border-indigo-200 dark:border-indigo-800/70 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <p class="font-bold text-indigo-950 dark:text-indigo-200">3. Cómo ver el PCP asignado (Primary Care Physician):</p>
+              <button
+                type="button"
+                onclick="copyScript('Umbrella Tab -> Links -> Search PCP', 'Ruta Search PCP')"
+                class="text-[11px] font-bold text-indigo-700 dark:text-indigo-400 hover:underline"
+              >
+                Copiar ruta
+              </button>
+            </div>
+            <p class="font-mono text-indigo-900 dark:text-indigo-300 bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-indigo-200 dark:border-indigo-800">
+              Umbrella Tab &rarr; <strong>Links</strong> &rarr; <strong>Search PCP</strong> (ahí aparece el PCP asignado)
             </p>
           </div>
         </div>
@@ -1903,6 +1923,73 @@
       </div>
     </section>
 
+    <!-- ===================================================================== -->
+    <!-- SECCIÓN 6 (TAB SEPARADA): LMS ASSESSMENT / BANCO DE 30 PREGUNTAS      -->
+    <!-- ===================================================================== -->
+    <section id="sec-assessment" class="hub-section hidden space-y-3.5">
+      <!-- Fixed Header & Controls for the Separate Assessment Tab -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-soft space-y-3">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+          <div class="flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shrink-0">6</span>
+            <div>
+              <h2 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">
+                LMS Assessment &amp; Banco de Estudio (30 Preguntas)
+              </h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Preguntas 1–30 ordenadas &bull; Contenedor con scroll independiente para repaso rápido
+              </p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <span id="quiz-visible-badge" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+              30 / 30 preguntas
+            </span>
+            <button
+              type="button"
+              id="quiz-study-toggle"
+              class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition-colors shadow-sm"
+            >
+              Modo Práctica: Ocultar Respuestas
+            </button>
+          </div>
+        </div>
+
+        <!-- Internal Quiz Search & Topic Filter -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2.5">
+          <div class="relative flex-1">
+            <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              id="quiz-search-input"
+              placeholder="Filtrar dentro de las 30 preguntas (ej. QAA, OMS, CI, MARX, Grievance, November 15...)"
+              class="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500"
+            />
+          </div>
+
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5">
+            <button type="button" data-qcat="all" class="qcat-pill px-2.5 py-1 rounded-lg text-[11px] font-bold bg-indigo-600 text-white whitespace-nowrap">Todas</button>
+            <button type="button" data-qcat="call-flow" class="qcat-pill px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 whitespace-nowrap">Call Flow &amp; VAT</button>
+            <button type="button" data-qcat="crm-oms" class="qcat-pill px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 whitespace-nowrap">CRM, OMS &amp; RTI</button>
+            <button type="button" data-qcat="grievances-qaa" class="qcat-pill px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 whitespace-nowrap">Grievances &amp; QAA</button>
+            <button type="button" data-qcat="demographics-id" class="qcat-pill px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 whitespace-nowrap">Demographics &amp; ID</button>
+            <button type="button" data-qcat="medicare-eligibility" class="qcat-pill px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 whitespace-nowrap">Medicare &amp; Eligibility</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Independent Scroll Container for the 30 Questions -->
+      <div
+        id="quiz-scroll-container"
+        class="h-[68vh] min-h-[420px] max-h-[780px] overflow-y-auto pr-2 space-y-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-900/50 p-3.5 sm:p-4 shadow-inner"
+      >
+        <!-- Questions Q1 - Q30 injected dynamically -->
+      </div>
+    </section>
+
   </main>
 
   <!-- Toast Notification -->
@@ -2130,6 +2217,541 @@
 
     let activeCategory = 'all';
 
+    // 9. LMS Assessment Questions Data (30 Questions from PDF)
+    const assessmentQuestions = [
+      {
+        num: 1,
+        cat: 'grievances-qaa',
+        catLabel: 'Grievances & QAA',
+        q: 'Which statement best describes a QAA Complaint?',
+        options: [
+          'A request from a member to transfer to a different provider for convenience purposes.',
+          "A member's appeal of a denied authorization for a specific procedure.",
+          "A member's expression of concern regarding the quality of care received, the attitude of the provider, or a lack of access to desired or needed medical services.",
+          "An inquiry regarding coverage for a specific medication under the member's benefit plan."
+        ],
+        correctIndex: 2
+      },
+      {
+        num: 2,
+        cat: 'demographics-id',
+        catLabel: 'Demographics & ID',
+        q: 'What should you do if the template is not working to update the address?',
+        options: [
+          "Update member's address in CI.",
+          'Call the member back at a later date to update their address.',
+          'Inform members they are unable to update their address.'
+        ],
+        correctIndex: 0
+      },
+      {
+        num: 3,
+        cat: 'crm-oms',
+        catLabel: 'CRM, OMS & RTI',
+        q: 'Where can you find the OMS link in CRM?',
+        options: [
+          'On the Plan Member page.',
+          'Under the Interaction History tab.',
+          'On the ID-Card Management page.',
+          'In QuickStart+.'
+        ],
+        correctIndex: 0
+      },
+      {
+        num: 4,
+        cat: 'demographics-id',
+        catLabel: 'Demographics & ID',
+        q: 'Ronald is calling on November 29th to request that a new ID card be sent to him. What should you tell Ronald about his request?',
+        options: [
+          'From October 15 until the end of the year, any ID card requested will be printed for the future plan year.',
+          'From September 15 until the end of the year, any ID card requested will be printed for the future plan year.',
+          'From November 15 until the end of the year, any ID card requested will be printed for the future plan year.'
+        ],
+        correctIndex: 2
+      },
+      {
+        num: 5,
+        cat: 'grievances-qaa',
+        catLabel: 'Grievances & QAA',
+        q: 'What template must be completed for all Quality, Attitude, and Access to Care (QAA) complaints?',
+        options: [
+          'QAA Complaint Template',
+          'Access to Care template',
+          'Quality Complaint Template'
+        ],
+        correctIndex: 0
+      },
+      {
+        num: 6,
+        cat: 'medicare-eligibility',
+        catLabel: 'Medicare & Eligibility',
+        q: 'Which models offer universal coverage?',
+        options: [
+          'Employer payer only',
+          'Single payer & Multi-payer',
+          'Cash only system',
+          'Private payer only'
+        ],
+        correctIndex: 1
+      },
+      {
+        num: 7,
+        cat: 'medicare-eligibility',
+        catLabel: 'Medicare & Eligibility',
+        q: 'Does each individual member receive their own Smart Summary?',
+        options: [
+          'No. Smart Summaries cover all claim and coverage information for all parties in the household.',
+          'No. Smart Summaries cover all claim and coverage information for all parties on a plan.',
+          'Yes. Smart Summaries are specific to the claims and coverage for each member.',
+          'It depends. Members must request their individual Smart Summary.'
+        ],
+        correctIndex: 2
+      },
+      {
+        num: 8,
+        cat: 'call-flow',
+        catLabel: 'Call Flow & VAT',
+        q: "In which phase do you clarify the caller's identity and authority to receive sensitive information about the plan in question?",
+        options: [
+          'Issue Identification Phase',
+          'Closing Phase',
+          'Opening Phase',
+          'Resolution Phase'
+        ],
+        correctIndex: 2
+      },
+      {
+        num: 9,
+        cat: 'demographics-id',
+        catLabel: 'Demographics & ID',
+        q: "What system/tool will you use to verify a member's date of death or a name change?",
+        options: [
+          'MARX/Wipro',
+          'Debut',
+          'OMS',
+          'CI/PAPI'
+        ],
+        correctIndex: 0
+      },
+      {
+        num: 10,
+        cat: 'medicare-eligibility',
+        catLabel: 'Medicare & Eligibility',
+        q: "When will a member's plan terminate once CMS has received notification from SSA about the member's death?",
+        options: [
+          'The last day of the year that the member passed.',
+          'The last day of the month the member passed.',
+          'The first day following the month, the member has passed.',
+          'The day CMS is notified, the member has passed.'
+        ],
+        correctIndex: 1
+      },
+      {
+        num: 11,
+        cat: 'call-flow',
+        catLabel: 'Call Flow & VAT',
+        q: 'In which phase do you especially strive to remain engaged with the caller and keep them informed as you follow process guidance in Mentor?',
+        options: [
+          'Issue Identification Phase',
+          'Resolution Phase',
+          'Opening Phase',
+          'Closing Phase'
+        ],
+        correctIndex: 1
+      },
+      {
+        num: 12,
+        cat: 'call-flow',
+        catLabel: 'Call Flow & VAT',
+        q: "In which phase of the call flow do you make sure you've addressed all the caller's issues and communicated the status of those issues?",
+        options: [
+          'Resolution Phase',
+          'Closing Phase',
+          'Issue Identification Phase',
+          'Opening Phase'
+        ],
+        correctIndex: 1
+      },
+      {
+        num: 13,
+        cat: 'demographics-id',
+        catLabel: 'Demographics & ID',
+        q: 'On what page in CRM can you order new ID cards?',
+        options: [
+          'ID-Card Management page.',
+          'Under the Interaction History tab.',
+          'On the Claims Summary screen.',
+          'In QuickStart+.'
+        ],
+        correctIndex: 0
+      },
+      {
+        num: 14,
+        cat: 'demographics-id',
+        catLabel: 'Demographics & ID',
+        q: "Where in CRM do you access the template to make updates or changes to a member's demographics?",
+        options: [
+          'QuickStart+',
+          'Plan Member Page',
+          'Case Edit page',
+          'Person Account Page'
+        ],
+        correctIndex: 1
+      },
+      {
+        num: 15,
+        cat: 'grievances-qaa',
+        catLabel: 'Grievances & QAA',
+        q: 'Which statement best describes a grievance?',
+        options: [
+          'When a member disagrees with the amount billed for a specific service.',
+          'When the member disagrees with the outcome of a claim or authorization.',
+          'When a member expresses dissatisfaction with any aspect of their plan or their experience.',
+          'When a member expresses concern about locating a provider.'
+        ],
+        correctIndex: 2
+      },
+      {
+        num: 16,
+        cat: 'call-flow',
+        catLabel: 'Call Flow & VAT',
+        q: "In which phase do you ask probing questions to clarify the caller's needs and set up documentation in Quick Start+?",
+        options: [
+          'Opening Phase',
+          'Resolution Phase',
+          'Closing Phase',
+          'Issue Identification Phase'
+        ],
+        correctIndex: 3
+      },
+      {
+        num: 17,
+        cat: 'demographics-id',
+        catLabel: 'Demographics & ID',
+        q: 'What classification and intent will you use in QuickStart + to document a successful address change?',
+        options: [
+          'Address::Update',
+          'Demographics:: No Change',
+          'Demographics: Change',
+          'Address::Change'
+        ],
+        correctIndex: 2
+      },
+      {
+        num: 18,
+        cat: 'medicare-eligibility',
+        catLabel: 'Medicare & Eligibility',
+        q: 'Which statement best describes the typical living arrangement of American seniors aged 65+?',
+        options: [
+          'Most live with extended family members',
+          'Most live in nursing homes',
+          'Most live in assisted living facilities',
+          'Most live independently with a spouse or alone'
+        ],
+        correctIndex: 3
+      },
+      {
+        num: 19,
+        cat: 'demographics-id',
+        catLabel: 'Demographics & ID',
+        q: "Which option should you choose to update a member's phone number or email?",
+        options: [
+          'Address Update',
+          'Contact Demographic Update',
+          'Critical Demographic Update'
+        ],
+        correctIndex: 1
+      },
+      {
+        num: 20,
+        cat: 'crm-oms',
+        catLabel: 'CRM, OMS & RTI',
+        q: 'Where will you find item number codes used to place an order in OMS?',
+        options: [
+          'In QuickStart+.',
+          'On the ID-Card Management page.',
+          'By clicking the EMME link.',
+          'The OMS and OES codes Mentor document.'
+        ],
+        correctIndex: 3
+      },
+      {
+        num: 21,
+        cat: 'crm-oms',
+        catLabel: 'CRM, OMS & RTI',
+        q: 'What is the first thing you should do before ordering any printed materials for a member?',
+        options: [
+          'Verify the address on file is correct.',
+          "View the member's account page.",
+          'Find records of previously printed documents.',
+          "Verify the member's phone number."
+        ],
+        correctIndex: 0
+      },
+      {
+        num: 22,
+        cat: 'medicare-eligibility',
+        catLabel: 'Medicare & Eligibility',
+        q: 'Which of the following qualifies as an Eligibility Verification call?',
+        options: [
+          '"I\'m calling to make sure my plan application is in process because I got a letter saying you needed more information from me"',
+          '"Hi. I\'ve moved, and I want to make sure my plan\'s still good here."',
+          '"Hi. I\'m at the heart clinic here, and they say my plan\'s not coming up in their system, but I know I signed up for a new one. Can you check that for me?"',
+          '"I\'m calling to find out if I\'m eligible for out-of-network surgery. There\'s a surgeon my friend recommended at Baptist East Hospital, and I\'m pretty sure he\'s not in-network."'
+        ],
+        correctIndex: 2
+      },
+      {
+        num: 23,
+        cat: 'call-flow',
+        catLabel: 'Call Flow & VAT',
+        q: 'What are the prerecorded messages that provide information to advocates about the transferred VAT call?',
+        options: [
+          'Transfer messages.',
+          'VAT messages.',
+          'Dial tones.',
+          'Whisper tones.'
+        ],
+        correctIndex: 1,
+        note: 'Seleccionado en el examen: "VAT messages". (Tip Genesys: en llamadas transferidas también se les conoce como Whisper tones).'
+      },
+      {
+        num: 24,
+        cat: 'crm-oms',
+        catLabel: 'CRM, OMS & RTI',
+        q: 'How do you access EMME to create a letter?',
+        options: [
+          'By accessing the EMME link in QuickStart+',
+          'By visiting the My MS Programs SharePoint page.',
+          'From the Hi! Page.',
+          'By clicking the Create Letter - EMME quick link in CRM.'
+        ],
+        correctIndex: 3
+      },
+      {
+        num: 25,
+        cat: 'grievances-qaa',
+        catLabel: 'Grievances & QAA',
+        q: 'What Classification & Intent should be selected for a Quality, Attitude, and Access to Care (QAA) Complaint call?',
+        options: [
+          'Always use the Complaints or Compliments All Other Complaints.',
+          'Always use the Complaints or Compliments - QAA.',
+          'The C&I that you select should match the main reason for the call.',
+          'Always use the Complaints or Compliments - Compliments'
+        ],
+        correctIndex: 1
+      },
+      {
+        num: 26,
+        cat: 'crm-oms',
+        catLabel: 'CRM, OMS & RTI',
+        q: 'In which of the following circumstances would full free-text documentation be required in Quick Start+?',
+        options: [
+          "The member account doesn't appear in CRM.",
+          "A member representative calls on the member's behalf.",
+          'You were unable to close out the case.',
+          "The member isn't an Individual Medicare member."
+        ],
+        correctIndex: 2
+      },
+      {
+        num: 27,
+        cat: 'crm-oms',
+        catLabel: 'CRM, OMS & RTI',
+        q: 'Where would you go to view a letter a member is calling about?',
+        options: [
+          'The ID Card Center.',
+          'The Find Care link.',
+          'The Person Account page.',
+          'The RTI section of CRM.'
+        ],
+        correctIndex: 3
+      },
+      {
+        num: 28,
+        cat: 'medicare-eligibility',
+        catLabel: 'Medicare & Eligibility',
+        q: 'Which three pieces of information are key to resolving an Eligibility Verification call?',
+        options: [
+          "Member's plan status / Member's plan type / Member's plan effective date",
+          "Member's Medicare ID / Member's date of birth / Member's Social Security Number",
+          "Member's residential address / Member's phone number / Member's email address",
+          "Member's Humana ID / Member's date of birth / Member's zip code"
+        ],
+        correctIndex: 3,
+        note: 'Seleccionado en PDF: Humana ID / DOB / Zip code (datos de autenticación). Para confirmar elegibilidad en sistema revisar: Plan status, Plan type y Plan effective date.'
+      },
+      {
+        num: 29,
+        cat: 'grievances-qaa',
+        catLabel: 'Grievances & QAA',
+        q: 'What Classification & Intent should be selected for a grievance call?',
+        options: [
+          'Always use the Complaints or Compliments - All Other Complaints.',
+          'The C&I that you select should match the main reason for the call.',
+          'Always use the Complaints or Compliments - QAA.',
+          'Always use the Complaints or Compliments - Compliments.'
+        ],
+        correctIndex: 0
+      },
+      {
+        num: 30,
+        cat: 'grievances-qaa',
+        catLabel: 'Grievances & QAA',
+        q: 'Why is it important to leave your Grievance Case open in CRM after saving the documentation?',
+        options: [
+          'It ensures cases will route to the Resolutions team.',
+          'It enables automatic closure of the case.',
+          'It allows other users to edit your documentation.',
+          'It achieves the case immediately.'
+        ],
+        correctIndex: 0
+      }
+    ];
+
+    const quizScrollContainer = document.getElementById('quiz-scroll-container');
+    const quizSearchInput = document.getElementById('quiz-search-input');
+    const quizVisibleBadge = document.getElementById('quiz-visible-badge');
+    const quizStudyToggle = document.getElementById('quiz-study-toggle');
+    const qcatPills = document.querySelectorAll('.qcat-pill');
+
+    let activeQuizCat = 'all';
+    let isStudyModeHidden = false;
+    const revealedQuestions = new Set();
+
+    function renderAssessmentQuestions() {
+      const qFilter = quizSearchInput.value.trim().toLowerCase();
+      quizScrollContainer.innerHTML = '';
+
+      const filtered = assessmentQuestions.filter(item => {
+        const matchCat = activeQuizCat === 'all' || item.cat === activeQuizCat;
+        const searchableBlob = `${item.num} ${item.catLabel} ${item.q} ${item.options.join(' ')} ${item.note || ''}`.toLowerCase();
+        const matchText = !qFilter || searchableBlob.includes(qFilter);
+        return matchCat && matchText;
+      });
+
+      quizVisibleBadge.textContent = `${filtered.length} / 30 preguntas`;
+
+      if (filtered.length === 0) {
+        quizScrollContainer.innerHTML = `
+          <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 text-center text-xs text-slate-500 dark:text-slate-400">
+            No hay preguntas que coincidan con "<strong class="text-slate-800 dark:text-white">${quizSearchInput.value}</strong>".
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const showAnswer = !isStudyModeHidden || revealedQuestions.has(item.num);
+        const card = document.createElement('article');
+        card.setAttribute('data-searchable', 'true');
+        card.className = 'bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 shadow-sm space-y-2.5';
+
+        const optionsHtml = item.options.map((opt, idx) => {
+          const isCorrect = idx === item.correctIndex;
+          if (showAnswer && isCorrect) {
+            return `
+              <div class="flex items-start gap-2.5 p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border-2 border-emerald-500/70 text-xs font-bold text-emerald-950 dark:text-emerald-100">
+                <span class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px] shrink-0 mt-0.5">&#10003;</span>
+                <span>${opt}</span>
+              </div>
+            `;
+          }
+          return `
+            <div class="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 text-xs text-slate-600 dark:text-slate-300">
+              <span class="w-5 h-5 rounded-full border border-slate-300 dark:border-slate-600 flex items-center justify-center text-[10px] font-mono shrink-0 mt-0.5">${String.fromCharCode(65 + idx)}</span>
+              <span>${opt}</span>
+            </div>
+          `;
+        }).join('');
+
+        const noteHtml = (showAnswer && item.note)
+          ? `<p class="text-[11px] text-indigo-800 dark:text-indigo-300 bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/70 rounded-lg px-2.5 py-1.5">${item.note}</p>`
+          : '';
+
+        const revealBtnHtml = isStudyModeHidden
+          ? `<button type="button" onclick="toggleRevealQuestion(${item.num})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${revealedQuestions.has(item.num) ? 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200' : 'bg-indigo-600 text-white hover:bg-indigo-700'}">
+              ${revealedQuestions.has(item.num) ? 'Ocultar respuesta' : 'Ver respuesta'}
+            </button>`
+          : '';
+
+        const copyPayload = `Q${item.num}: ${item.q} -> Answer: ${item.options[item.correctIndex]}`;
+
+        card.innerHTML = `
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded-lg bg-indigo-600 text-white font-mono font-extrabold text-xs">Q${item.num}</span>
+              <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px] font-semibold">${item.catLabel}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              ${revealBtnHtml}
+              <button type="button" data-copy-qa="${copyPayload.replace(/"/g, '&quot;')}" class="copy-qa-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-emerald-100 dark:hover:bg-emerald-950 text-slate-700 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-300 text-[11px] font-bold transition-colors">
+                Copiar Q&amp;A
+              </button>
+            </div>
+          </div>
+          <p class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-snug">${item.q}</p>
+          <div class="space-y-1.5">${optionsHtml}</div>
+          ${noteHtml}
+        `;
+
+        quizScrollContainer.appendChild(card);
+      });
+
+      quizScrollContainer.querySelectorAll('.copy-qa-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          copyScript(btn.getAttribute('data-copy-qa'), 'Pregunta y Respuesta');
+        });
+      });
+    }
+
+    window.toggleRevealQuestion = function(qNum) {
+      if (revealedQuestions.has(qNum)) {
+        revealedQuestions.delete(qNum);
+      } else {
+        revealedQuestions.add(qNum);
+      }
+      renderAssessmentQuestions();
+    };
+
+    quizStudyToggle.addEventListener('click', () => {
+      isStudyModeHidden = !isStudyModeHidden;
+      revealedQuestions.clear();
+      if (isStudyModeHidden) {
+        quizStudyToggle.textContent = 'Modo Estudio: Mostrar Respuestas';
+        quizStudyToggle.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+        quizStudyToggle.classList.add('bg-amber-600', 'hover:bg-amber-700');
+      } else {
+        quizStudyToggle.textContent = 'Modo Práctica: Ocultar Respuestas';
+        quizStudyToggle.classList.remove('bg-amber-600', 'hover:bg-amber-700');
+        quizStudyToggle.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+      }
+      renderAssessmentQuestions();
+    });
+
+    qcatPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        activeQuizCat = pill.dataset.qcat;
+        qcatPills.forEach(p => {
+          if (p.dataset.qcat === activeQuizCat) {
+            p.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300');
+            p.classList.add('bg-indigo-600', 'text-white');
+          } else {
+            p.classList.remove('bg-indigo-600', 'text-white');
+            p.classList.add('bg-slate-100', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300');
+          }
+        });
+        renderAssessmentQuestions();
+        quizScrollContainer.scrollTop = 0;
+      });
+    });
+
+    quizSearchInput.addEventListener('input', () => {
+      renderAssessmentQuestions();
+    });
+
+    renderAssessmentQuestions();
+
     function applyFilters() {
       const rawQuery = searchInput.value.trim();
       const query = rawQuery.toLowerCase();
@@ -2143,6 +2765,12 @@
       let totalMatches = 0;
 
       sections.forEach(sec => {
+        // Mantener sec-assessment en su propia tab separada salvo que se seleccione su tab o haya búsqueda global activa
+        if (sec.id === 'sec-assessment' && activeCategory === 'all' && !query) {
+          sec.classList.add('hidden');
+          return;
+        }
+
         const matchesCategory = activeCategory === 'all' || sec.id === activeCategory;
         if (!matchesCategory) {
           sec.classList.add('hidden');
@@ -2197,6 +2825,9 @@
           pill.classList.add('bg-slate-100', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300');
         }
       });
+      if (targetId === 'sec-assessment' && quizScrollContainer) {
+        quizScrollContainer.scrollTop = 0;
+      }
       applyFilters();
     }
 
@@ -2224,7 +2855,7 @@
 
     // Keyboard shortcut '/' to focus instant search quickly during calls
     document.addEventListener('keydown', (e) => {
-      if (e.key === '/' && document.activeElement !== searchInput && document.activeElement !== scriptTopicInput) {
+      if (e.key === '/' && document.activeElement !== searchInput && document.activeElement !== scriptTopicInput && document.activeElement !== quizSearchInput) {
         e.preventDefault();
         searchInput.focus();
       } else if (e.key === 'Escape' && document.activeElement === searchInput) {
